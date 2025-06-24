@@ -1,0 +1,136 @@
+{% load static %}
+{% if user.is_authenticated %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guilds - SkilledGuild</title>
+    <link rel="stylesheet" href="{% static 'skilledguild/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .guilds-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2.5rem;
+            margin-top: 1.5rem;
+        }
+        .guild-card {
+            background: rgba(34, 34, 59, 0.85);
+            border-radius: 18px;
+            box-shadow: 0 4px 32px #0007, 0 1.5px 0 var(--guild-color, #ffba08) inset;
+            padding: 2.2rem 2rem 1.5rem 2rem;
+            min-width: 260px;
+            max-width: 320px;
+            flex: 1 1 260px;
+            border: 1.5px solid #23244a;
+            transition: box-shadow 0.2s, border 0.2s, transform 0.18s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            cursor: pointer;
+        }
+        .guild-card:hover {
+            box-shadow: 0 8px 40px var(--guild-color, #ffba08), 0 4px 32px #0007;
+            border: 1.5px solid var(--guild-color, #ffba08);
+            transform: translateY(-6px) scale(1.025);
+        }
+        .guild-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            margin-bottom: 1.1rem;
+            background: #181828;
+            object-fit: contain;
+            box-shadow: 0 2px 12px #0005;
+        }
+        .guild-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--guild-color, #ffba08);
+            margin-bottom: 0.7rem;
+            letter-spacing: 1px;
+        }
+        .guild-desc {
+            color: #f3f3f7;
+            font-size: 1.08rem;
+            margin-bottom: 0.2rem;
+        }
+        .guild-join-btn {
+            margin-top: 1.2rem;
+            background: var(--guild-color, #ffba08);
+            color: #181828;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.3rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+            box-shadow: 0 2px 8px #0003;
+        }
+        .guild-join-btn.joined {
+            background: #ff3c41;
+            color: #fff;
+            box-shadow: 0 0 12px #ff3c4180;
+        }
+        .guild-join-btn:hover {
+            background: #ff3c41;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-logo">SkilledGuild</div>
+        <ul class="navbar-menu">
+            <li><a href="{% url 'dashboard' %}"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fa-solid fa-circle-info"></i> About</a></li>
+            <li><a href="#"><i class="fa-solid fa-user"></i> Profile</a></li>
+            <li><a href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </nav>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="active"><a href="#"><i class="fa-solid fa-users"></i> Guilds</a></li>
+                <li><a href="#"><i class="fa-solid fa-people-group"></i> Team-Up</a></li>
+                <li><a href="#"><i class="fa-solid fa-scroll"></i> Quests</a></li>
+                <li><a href="#"><i class="fa-solid fa-hand-holding-dollar"></i> SponsorVerse</a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <h1 style="margin-bottom:1.5rem;">Guilds</h1>
+            <div class="guilds-list">
+                {% for guild in guilds %}
+                <div class="guild-card" style="--guild-color: {{ guild.theme_color|default:'#ffba08' }};">
+                    <a href="{% url 'guild_detail' guild.id %}" style="text-decoration:none;width:100%;display:block;">
+                    {% if guild.icon_url %}
+                        <img src="{{ guild.icon_url }}" alt="{{ guild.name }} icon" class="guild-icon" />
+                    {% else %}
+                        <span class="guild-icon"><i class="fa-solid fa-users"></i></span>
+                    {% endif %}
+                    <div class="guild-title">{{ guild.name }}</div>
+                    <div class="guild-desc">{{ guild.description }}</div>
+                    </a>
+                    <form method="post" action="{% url 'toggle_guild_membership' guild.id %}" class="guild-join-form" style="width:100%;margin-top:0.7rem;">
+                        {% csrf_token %}
+                        {% if guild.id in user_guild_ids %}
+                            <button type="submit" class="guild-join-btn joined">Joined</button>
+                        {% else %}
+                            <button type="submit" class="guild-join-btn">Join</button>
+                        {% endif %}
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+{% else %}
+    {% url 'login' as login_url %}
+    <script>window.location.href = "{{ login_url }}";</script>
+{% endif %}

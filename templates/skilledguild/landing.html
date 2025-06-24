@@ -24,8 +24,8 @@
       <a href="#contact">Contact</a>
     </div>
     <div class="navbar-actions">
-      <button class="btn btn-login">Log in</button>
-      <button class="btn btn-signup">Sign Up</button>
+      <a href="{% url 'login_register' %}" class="btn btn-login">Log in</a>
+      <a href="{% url 'login_register' %}" class="btn btn-signup">Sign Up</a>
     </div>
   </nav>
   <!-- Hero Section 1 -->
@@ -41,7 +41,7 @@
         Unite learning, teaming, and opportunities — all in one guild.
         Connecting learners, hobbyists, and teammates in skill-based communities.
       </p>
-      <button class="btn btn-primary">Join the Guild</button>
+      <a href="{% url 'login_register' %}" class="btn btn-primary">Join the Guild</a>
     </div>
     <div class="hero-image reveal-right">
       <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=600&h=600&q=80"

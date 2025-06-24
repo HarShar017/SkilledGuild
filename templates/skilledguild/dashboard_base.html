@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard - SkilledGuild{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'skilledguild/dashboard.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <nav class="dashboard-navbar">
+        <div class="navbar-logo">Skilled<span class="accent">Guild</span></div>
+        <ul class="navbar-links">
+            <li><a href="{% url 'dashboard' %}" class="active">Dashboard</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Profile</a></li>
+            <li>
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </li>
+        </ul>
+        <div class="navbar-user">👤 {{ user.username }}</div>
+    </nav>
+    <div class="dashboard-layout">
+        <aside class="dashboard-sidebar">
+            <ul>
+                <li><a href="#" class="sidebar-link">Guilds</a></li>
+                <li><a href="#" class="sidebar-link">Team-Up</a></li>
+                <li><a href="#" class="sidebar-link">Quests</a></li>
+                <li><a href="#" class="sidebar-link">SponsorVerse</a></li>
+            </ul>
+        </aside>
+        <main class="dashboard-main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
