@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkilledGuild - Fuel Your Growth, Build Together</title>
+  <link rel="stylesheet" href="{% static 'skilledguild/landing.css' %}" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Special+Gothic+Expanded+One&display=swap');
+
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-logo">Skilled<span class="accent">Guild </span></div>
+    <div class="navbar-links">
+      <a href="#home" class="active">Home</a>
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn btn-login">Log in</button>
+      <button class="btn btn-signup">Sign Up</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section 1 -->
+  <section class="hero" id="home">
+    <div class="starry-sky"></div>
+    <div id="particles-js"></div>
+    <div class="hero-content reveal-left">
+      <h1 class="hero-title">
+        Fuel Your <span class="highlight">Growth</span><br>
+        Build with <span class="highlight1">"The Guild" </span>
+      </h1>
+      <p class="hero-desc">
+        Unite learning, teaming, and opportunities — all in one guild.
+        Connecting learners, hobbyists, and teammates in skill-based communities.
+      </p>
+      <button class="btn btn-primary">Join the Guild</button>
+    </div>
+    <div class="hero-image reveal-right">
+      <img src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=600&h=600&q=80"
+        alt="Confident young techie with headphones">
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about-section">
+    <div class="about-container">
+      <div class="about-text">
+        <h2 class="about-heading">About SkilledGuild</h2>
+        <p class="about-desc">
+          <strong>SkilledGuild</strong> is a vibrant platform connecting learners, hobbyists, and professionals through
+          skill-based communities. Our mission is to empower growth, collaboration, and opportunity by making it easy to
+          find teammates, join hackathons, and access sponsorships.<br><br>
+          Whether you're looking to level up your skills, build meaningful projects, or connect with like-minded people,
+          SkilledGuild is your launchpad. We believe in the power of community-driven learning and real-world
+          collaboration.
+        </p>
+      </div>
+      <div class="about-image">
+        <img src="{% static 'skilledguild/samples/4.jpeg' %}" alt="About SkilledGuild">
+      </div>
+    </div>
+  </section>
+  <section id="features">
+    <h2 class="features-section-heading">Features</h2>
+    <div class="simple-carousel">
+
+      <!-- Slide 1 -->
+      <div class="simple-carousel-slide" style="background-image:url('{% static 'skilledguild/samples/1.jpg' %}');">
+        <div class="overlay"></div>
+        <div class="simple-carousel-content">
+          <div class="simple-carousel-title">Community Guilds</div>
+          <div class="simple-carousel-desc">Join or create micro-communities (guilds) centered around specific
+            interests, tech stacks, or goals. Engage in discussions, host sessions, and build your Guild.</div>
+        </div>
+      </div>
+
+      <!-- Slide 2 -->
+      <div class="simple-carousel-slide" style="background-image:url('{% static 'skilledguild/samples/2.jpg' %}');">
+        <div class="overlay"></div>
+        <div class="simple-carousel-content">
+          <div class="simple-carousel-title">Opportunity Hub</div>
+          <div class="simple-carousel-desc">Access a curated feed of hackathons, internships, workshops, grants, and
+            sponsor programs — all in one place. Never miss out on real-world opportunities aligned with your growth and
+            goals.</div>
+        </div>
+      </div>
+
+      <!-- Slide 3 -->
+      <div class="simple-carousel-slide" style="background-image:url('{% static 'skilledguild/samples/3.jpg' %}');">
+        <div class="overlay"></div>
+        <div class="simple-carousel-content">
+          <div class="simple-carousel-title">Skill Launchpads</div>
+          <div class="simple-carousel-desc">Challenge yourself with gamified micro-tasks and community-led learning
+            paths. Track progress, build new skills, and showcase achievements — all while having fun.
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4 -->
+      <div class="simple-carousel-slide" style="background-image:url('{% static 'skilledguild/samples/4.jpeg' %}');">
+        <div class="overlay"></div>
+        <div class="simple-carousel-content">
+          <div class="simple-carousel-title">SponsorVerse</div>
+          <div class="simple-carousel-desc">A dynamic matchmaking arena where event organizers and sponsors discover
+            each other. Post requirements, filter by budget and interest areas, and build mutually beneficial
+            partnerships with ease.</div>
+        </div>
+      </div>
+      <!-- Slide 5 -->
+      <div class="simple-carousel-slide active" style="background-image:url('{% static 'skilledguild/samples/5.jpg' %}');">
+        <div class="overlay"></div>
+        <div class="simple-carousel-content">
+          <div class="simple-carousel-title">Instant Teaming</div>
+          <div class="simple-carousel-desc">Find ideal teammates for hackathons, collaborations, and projects based on
+            mutual interests, skill levels, and availability. Whether you're a beginner or a pro, connect with peers who
+            complement your strengths.</div>
+        </div>
+      </div>
+      <!-- Slide 6 -->
+      <div class="simple-carousel-slide" style="background-image:url('{% static 'skilledguild/samples/6.jpg' %}');">
+        <div class="overlay"></div>
+        <div class="simple-carousel-content">
+          <div class="simple-carousel-title">Event Deck (Online + Offline)</div>
+          <div class="simple-carousel-desc">Find and list both online and offline events — workshops, meetups,
+            hackathons, or community jams. Get reminders, RSVP, and sync with your calendar seamlessly.</div>
+        </div>
+      </div>
+
+      <!-- Arrows -->
+      <button class="simple-carousel-arrow left">&#10094;</button>
+      <button class="simple-carousel-arrow right">&#10095;</button>
+
+    </div>
+  </section>
+  <!-- Contact Section -->
+  <section class="contact" id="contact">
+    <div class="contact-heading">
+      <h2>Let’s <span class="highlight">Connect</span></h2>
+      <p class="subheading">Got questions, feedback, or ideas? Reach out and let’s build something great together.</p>
+    </div>
+
+    <div class="contact-container">
+      <!-- Left: Contact Info -->
+      <div class="contact-info reveal-left">
+        <h3>📍 Headquarters</h3>
+        <p>SkilledGuild HQ, New Delhi, India</p>
+
+        <h3>📧 Email</h3>
+        <p><a href="mailto:hello@skilledguild.com">hello@skilledguild.com</a></p>
+
+        <h3>📞 Phone</h3>
+        <p>+91 98765 43210</p>
+
+        <h3>🔗 Follow Us</h3>
+        <div class="socials">
+          <a href="#" target="_blank">Twitter</a>
+          <a href="#" target="_blank">LinkedIn</a>
+          <a href="#" target="_blank">GitHub</a>
+        </div>
+      </div>
+
+      <!-- Right: Contact Form -->
+      <form class="contact-form reveal-right">
+        <div class="form-row">
+          <input type="text" placeholder="Your Name" required />
+          <input type="email" placeholder="Your Email" required />
+        </div>
+        <textarea placeholder="Your Message..." rows="6" required></textarea>
+        <button type="submit" class="btn btn-primary">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+  <script src="{% static 'skilledguild/landing.js' %}"></script>
+
+</body>
+
+</html>

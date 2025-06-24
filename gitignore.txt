@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+
+# Django
+db.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# VSCode
+.vscode/
+
+# Environments
+env/
+venv/
+ENV/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Static/media
+staticfiles/
+media/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Other
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Node
+node_modules/
