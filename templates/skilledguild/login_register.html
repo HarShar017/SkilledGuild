@@ -7,43 +7,174 @@
     <title>Login / Register - SkilledGuild</title>
     <link rel="stylesheet" href="{% static 'skilledguild/landing.css' %}">
     <style>
-        body { background: #0a0a23; color: #fff; }
-        .auth-container { max-width: 400px; margin: 60px auto; background: #181828; border-radius: 12px; box-shadow: 0 0 24px #0008; padding: 2rem; }
-        .tab-switch { display: flex; margin-bottom: 2rem; }
-        .tab-btn { flex: 1; padding: 1rem; background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer; border-bottom: 2px solid #222; transition: border 0.2s; }
-        .tab-btn.active { border-bottom: 2px solid #e63946; color: #e63946; }
-        .auth-form { display: none; }
-        .auth-form.active { display: block; }
-        .auth-form input { width: 100%; margin-bottom: 1rem; padding: 0.8rem; border-radius: 6px; border: 1px solid #333; background: #222; color: #fff; }
-        .auth-form button { width: 100%; padding: 0.8rem; background: #e63946; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .auth-form button:hover { background: #b71c1c; }
-        .switch-link { color: #e63946; cursor: pointer; text-decoration: underline; }
-        .error { color: #e63946; margin-bottom: 1rem; }
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Special+Gothic+Expanded+One&display=swap');
+    html { scroll-behavior: smooth; }
+    body { background: #090920; color: #fff; margin: 0; min-height: 100vh; overflow-x: hidden; }
+    .starry-sky {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none; overflow: hidden; z-index: 0;
+    }
+    .main-auth-flex {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+      padding: 0 0.5rem;
+      padding-top: 10vh;
+      overflow: hidden;
+      max-height: 100vh;
+    }
+    .auth-container {
+      width: 100%;
+      max-width: 420px;
+      max-height: 70vh;
+      background: #181828f7;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px #000b, 0 2px 16px #e6394622;
+      padding: 2rem 1.5rem 1.5rem 1.5rem;
+      margin: 80px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      overflow: auto;
+      
+    }
+    .tab-switch {
+      display: flex;
+      margin-bottom: 1.1rem;
+      border-radius: 10px;
+      background: #14141f;
+      overflow: hidden;
+      box-shadow: 0 2px 8px #0002;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.9rem 0;
+      background: none;
+      border: none;
+      color: #bfc6d1;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+      border-bottom: 2px solid transparent;
+      outline: none;
+      letter-spacing: 0.2px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tab-btn.active {
+      background: linear-gradient(90deg, #e63946 0%, #b71c1c 100%);
+      color: #fff;
+      border-bottom: 2.5px solid #ffba08;
+      box-shadow: 0 2px 12px #e6394633;
+      z-index: 2;
+    }
+    .tab-btn:hover:not(.active) {
+      background: #22223a;
+      color: #fff;
+    }
+    .auth-form {
+      display: none;
+      flex-direction: column;
+      gap: 1.05rem;
+    }
+    .auth-form.active {
+      display: flex;
+    }
+    .auth-form input {
+      width: 100%;
+      margin-bottom: 0;
+      padding: 0.7rem 1.1rem;
+      border-radius: 9px;
+      border: 1.5px solid #23244a;
+      background: #23244a;
+      color: #fff;
+      font-size: 1.04rem;
+      transition: border 0.18s, box-shadow 0.18s;
+      box-shadow: 0 2px 12px #0002, inset 0 2px 8px #23244a, 0 1px 8px #e6394611;
+    }
+    .auth-form input:focus {
+      border: 1.5px solid #e63946;
+      outline: none;
+      background: #23244add;
+      box-shadow: 0 2px 16px #e6394633, 0 1px 8px #e6394611, 0 0 0 2px #e6394633;
+    }
+    .auth-form button {
+      width: 100%;
+      padding: 0.85rem 0;
+      background: linear-gradient(90deg, #e63946 0%, #b71c1c 100%);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      font-weight: bold;
+      font-size: 1.08rem;
+      cursor: pointer;
+      margin-top: 0.2rem;
+      box-shadow: 0 2px 12px #e6394633;
+      transition: background 0.18s, box-shadow 0.18s;
+      letter-spacing: 0.2px;
+    }
+    .auth-form button:hover {
+      background: linear-gradient(90deg, #b71c1c 0%, #e63946 100%);
+      box-shadow: 0 4px 24px #e6394633;
+    }
+    .switch-link { color: #e63946; cursor: pointer; text-decoration: underline; }
+    .error { color: #e63946; margin-bottom: 0.7rem; text-align: center; font-size: 0.97rem; }
+    @media (max-width: 600px) {
+      .auth-container { padding: 0.9rem 0.3rem; border-radius: 10px; max-width: 98vw; }
+      .main-auth-flex { padding: 0 0.1rem; }
+    }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="tab-switch">
-            <button class="tab-btn active" id="login-tab">Log In</button>
-            <button class="tab-btn" id="register-tab">Sign Up</button>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-logo">Skilled<span class="accent">Guild </span></div>
+        <div class="navbar-links">
+            <a href="#home" class="active">Home</a>
+            <a href="#about">About</a>
+            <a href="#features">Features</a>
+            <a href="#contact">Contact</a>
         </div>
-        {% if login_error %}<div class="error">{{ login_error }}</div>{% endif %}
-        <form method="post" class="auth-form active" id="login-form">
-            {% csrf_token %}
-            <input type="text" name="login_username" placeholder="Username" required>
-            <input type="password" name="login_password" placeholder="Password" required>
-            <button type="submit" name="action" value="login">Log In</button>
-        </form>
-        {% if register_error %}<div class="error">{{ register_error }}</div>{% endif %}
-        <form method="post" class="auth-form" id="register-form">
-            {% csrf_token %}
-            <input type="text" name="register_username" placeholder="Username" required>
-            <input type="email" name="register_email" placeholder="Email" required>
-            <input type="password" name="register_password1" placeholder="Password" required>
-            <input type="password" name="register_password2" placeholder="Confirm Password" required>
-            <button type="submit" name="action" value="register">Sign Up</button>
-        </form>
+        <div class="navbar-actions">
+            <button class="btn btn-login">Log in</button>
+            <button class="btn btn-signup">Sign Up</button>
+        </div>
+    </nav>
+    <!-- Starry Sky Effect -->
+    <div class="starry-sky"></div>
+    <div class="main-auth-flex">
+        <div class="auth-container">
+            <div class="tab-switch">
+                <button class="tab-btn active" id="login-tab">Log In</button>
+                <button class="tab-btn" id="register-tab">Sign Up</button>
+            </div>
+            {% if login_error %}<div class="error">{{ login_error }}</div>{% endif %}
+            <form method="post" class="auth-form active" id="login-form">
+                {% csrf_token %}
+                <input type="text" name="login_username" placeholder="Username" required>
+                <input type="password" name="login_password" placeholder="Password" required>
+                <button type="submit" name="action" value="login">Log In</button>
+            </form>
+            {% if register_error %}<div class="error">{{ register_error }}</div>{% endif %}
+            <form method="post" class="auth-form" id="register-form">
+                {% csrf_token %}
+                <input type="text" name="register_username" placeholder="Username" required>
+                <input type="email" name="register_email" placeholder="Email" required>
+                <input type="password" name="register_password1" placeholder="Password" required>
+                <input type="password" name="register_password2" placeholder="Confirm Password" required>
+                <button type="submit" name="action" value="register">Sign Up</button>
+            </form>
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="{% static 'skilledguild/landing.js' %}"></script>
     <script>
         const loginTab = document.getElementById('login-tab');
         const registerTab = document.getElementById('register-tab');
