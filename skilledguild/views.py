@@ -73,15 +73,20 @@ def guilds(request):
 
 @login_required
 def toggle_guild_membership(request, guild_id):
+    guild = get_object_or_404(Guild, id=guild_id)
     if request.method == 'POST':
-        guild = get_object_or_404(Guild, id=guild_id)
         if request.user in guild.members.all():
             guild.members.remove(request.user)
             joined = False
         else:
             guild.members.add(request.user)
             joined = True
-        return JsonResponse({'joined': joined})
+        # If AJAX, return JSON
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'joined': joined})
+        # Otherwise, redirect back
+        next_url = request.META.get('HTTP_REFERER') or 'guilds'
+        return redirect(next_url)
     return HttpResponseForbidden()
 
 @login_required
