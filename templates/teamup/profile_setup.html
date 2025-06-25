@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Set Up Your TeamUp Profile{% endblock %}
+
+{% block content %}
+<div class="ml-64 mt-16 px-4 pb-8 max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-yellow-600 mb-6">Set Up Your TeamUp Profile</h1>
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <!-- Bio -->
+            <div>
+                <label for="{{ form.bio.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Bio</label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.bio.errors.0 }}</p>
+                {% endif %}
+            </div>
+            <!-- Skills and Interests -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.skills.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Skills</label>
+                    {{ form.skills }}
+                    {% if form.skills.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.skills.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-gray-500 text-xs mt-1">Hold Ctrl/Cmd to select multiple skills</p>
+                </div>
+                <div>
+                    <label for="{{ form.interests.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Interests</label>
+                    {{ form.interests }}
+                    {% if form.interests.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.interests.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-gray-500 text-xs mt-1">Hold Ctrl/Cmd to select multiple interests</p>
+                </div>
+            </div>
+            <!-- Location -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="{{ form.city.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">City</label>
+                    {{ form.city }}
+                </div>
+                <div>
+                    <label for="{{ form.state.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">State</label>
+                    {{ form.state }}
+                </div>
+                <div>
+                    <label for="{{ form.country.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Country</label>
+                    {{ form.country }}
+                </div>
+            </div>
+            <!-- Availability Status -->
+            <div>
+                <label for="{{ form.availability_status.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Availability Status</label>
+                {{ form.availability_status }}
+            </div>
+            <!-- Social Links -->
+            <div class="space-y-4">
+                <div>
+                    <label for="{{ form.github_profile.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">GitHub Profile</label>
+                    {{ form.github_profile }}
+                </div>
+                <div>
+                    <label for="{{ form.linkedin_profile.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">LinkedIn Profile</label>
+                    {{ form.linkedin_profile }}
+                </div>
+                <div>
+                    <label for="{{ form.portfolio_url.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Portfolio URL</label>
+                    {{ form.portfolio_url }}
+                </div>
+            </div>
+            <!-- Submit Button -->
+            <div class="flex justify-end mt-6">
+                <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-6 py-2 rounded-lg shadow">Save Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

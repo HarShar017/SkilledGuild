@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create New Team - TeamUp{% endblock %}
+
+{% block content %}
+<div class="ml-64 mt-16 px-4 pb-8 max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-yellow-600 mb-6">Create a New Team</h1>
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <!-- Title -->
+            <div>
+                <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Team Name*</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+            <!-- Description -->
+            <div>
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Description*</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.description.errors.0 }}</p>
+                {% endif %}
+                <p class="text-gray-500 text-xs mt-1">Describe your team's goals, project ideas, or what you're looking for in team members.</p>
+            </div>
+            <!-- Required Skills -->
+            <div>
+                <label for="{{ form.required_skills.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Required Skills</label>
+                {{ form.required_skills }}
+                {% if form.required_skills.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.required_skills.errors.0 }}</p>
+                {% endif %}
+                <p class="text-gray-500 text-xs mt-1">Hold Ctrl/Cmd to select multiple skills</p>
+            </div>
+            <!-- Team Size and Duration -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label for="{{ form.max_members.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Maximum Members</label>
+                    {{ form.max_members }}
+                </div>
+                <div>
+                    <label for="{{ form.start_date.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">Start Date</label>
+                    {{ form.start_date }}
+                </div>
+                <div>
+                    <label for="{{ form.end_date.id_for_label }}" class="block text-sm font-medium text-yellow-700 mb-1">End Date</label>
+                    {{ form.end_date }}
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-6">
+                <a href="{% url 'teamup:team_list' %}" class="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors">Cancel</a>
+                <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-6 py-2 rounded-lg shadow">Create Team</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
