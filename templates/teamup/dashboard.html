@@ -4,18 +4,18 @@
 {% block title %}TeamUp Dashboard{% endblock %}
 
 {% block content %}
-<div class="ml-64 mt-16 px-4 pb-8 max-w-6xl mx-auto">
+<div class="ml-64 mt-16 px-4 pb-8 max-w-6xl mx-auto flex flex-col gap-8 min-h-[80vh]">
     <!-- Profile Section -->
-    <div class="mb-8 bg-white rounded-xl shadow-lg p-6">
+    <div class="card mb-8 flex flex-col h-full">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-bold text-yellow-600">Your TeamUp Profile</h2>
+            <h2 class="text-2xl font-bold" style="color:var(--guild-color,#ffba08)">Your TeamUp Profile</h2>
             <a href="{% url 'teamup:profile_setup' %}" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow transition">Edit Profile</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <h3 class="text-lg font-semibold mb-2 text-yellow-700">Bio</h3>
-                <p class="text-gray-700">{{ profile.bio|default:"No bio provided" }}</p>
-                <h3 class="text-lg font-semibold mt-4 mb-2 text-yellow-700">Skills</h3>
+                <h3 class="text-lg font-semibold mb-2" style="color:var(--guild-color,#ffba08)">Bio</h3>
+                <p class="text-gray-100">{{ profile.bio|default:"No bio provided" }}</p>
+                <h3 class="text-lg font-semibold mt-4 mb-2" style="color:var(--guild-color,#ffba08)">Skills</h3>
                 <div class="flex flex-wrap gap-2">
                     {% for skill in profile.skills.all %}
                         <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">{{ skill.name }}</span>
@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div>
-                <h3 class="text-lg font-semibold mb-2 text-yellow-700">Interests</h3>
+                <h3 class="text-lg font-semibold mb-2" style="color:var(--guild-color,#ffba08)">Interests</h3>
                 <div class="flex flex-wrap gap-2">
                     {% for interest in profile.interests.all %}
                         <span class="bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full text-sm">{{ interest.name }}</span>
@@ -33,99 +33,105 @@
                         <p class="text-gray-400">No interests added yet</p>
                     {% endfor %}
                 </div>
-                <h3 class="text-lg font-semibold mt-4 mb-2 text-yellow-700">Location</h3>
-                <p class="text-gray-700">{{ profile.location|default:"Location not set" }}</p>
-                <h3 class="text-lg font-semibold mt-4 mb-2 text-yellow-700">Status</h3>
+                <h3 class="text-lg font-semibold mt-4 mb-2" style="color:var(--guild-color,#ffba08)">Location</h3>
+                <p class="text-gray-100">{{ profile.location|default:"Location not set" }}</p>
+                <h3 class="text-lg font-semibold mt-4 mb-2" style="color:var(--guild-color,#ffba08)">Status</h3>
                 <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
                     {{ profile.get_availability_status_display }}
                 </span>
             </div>
         </div>
     </div>
-
     <!-- Teams Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 auto-rows-fr">
         <!-- Your Teams -->
-        <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="card flex flex-col h-full">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold text-yellow-600">Your Teams</h2>
+                <h2 class="text-xl font-bold" style="color:var(--guild-color,#ffba08)">Your Teams</h2>
                 <a href="{% url 'teamup:create_team' %}" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow transition">Create Team</a>
             </div>
-            <div class="space-y-4">
-                {% for team in teams %}
-                    <div class="border rounded-lg p-4 hover:bg-yellow-50 transition">
-                        <a href="{% url 'teamup:team_detail' team.id %}" class="block">
-                            <h3 class="text-lg font-semibold text-yellow-700">{{ team.title }}</h3>
-                            <p class="text-gray-600 text-sm mt-1">{{ team.description|truncatechars:100 }}</p>
-                            <div class="flex flex-wrap gap-2 mt-2">
-                                {% for skill in team.required_skills.all %}
-                                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">{{ skill.name }}</span>
-                                {% endfor %}
-                            </div>
-                        </a>
-                    </div>
-                {% empty %}
-                    <p class="text-gray-400">You haven't joined any teams yet</p>
-                {% endfor %}
+            <div class="flex-1 flex flex-col justify-start">
+                <div class="space-y-4 flex-1">
+                    {% for team in teams %}
+                        <div class="border rounded-lg p-4 hover:bg-yellow-50 transition bg-opacity-80 flex flex-col h-full min-h-[120px]" style="background:rgba(34,34,59,0.7);border-color:#23244a;">
+                            <a href="{% url 'teamup:team_detail' team.id %}" class="block">
+                                <h3 class="text-lg font-semibold" style="color:var(--guild-color,#ffba08)">{{ team.title }}</h3>
+                                <p class="text-gray-100 text-sm mt-1">{{ team.description|truncatechars:100 }}</p>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    {% for skill in team.required_skills.all %}
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">{{ skill.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            </a>
+                        </div>
+                    {% empty %}
+                        <div class="flex-1 flex items-center justify-center min-h-[120px]">
+                            <p class="text-gray-400">You haven't joined any teams yet</p>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <!-- Pending Invitations -->
-        <div class="bg-white rounded-xl shadow-lg p-6">
-            <h2 class="text-xl font-bold text-yellow-600 mb-4">Pending Invitations</h2>
-            <div class="space-y-4">
-                {% for invitation in pending_invitations %}
-                    <div class="border rounded-lg p-4">
-                        <h3 class="text-lg font-semibold text-yellow-700">{{ invitation.team.title }}</h3>
-                        <p class="text-gray-600 text-sm mt-1">Invited by {{ invitation.from_user.username }}</p>
-                        <div class="mt-3 flex gap-2">
-                            <form method="post" action="{% url 'teamup:handle_invitation' invitation.id %}" class="inline">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="accept">
-                                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow text-sm">Accept</button>
-                            </form>
-                            <form method="post" action="{% url 'teamup:handle_invitation' invitation.id %}" class="inline">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="decline">
-                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow text-sm">Decline</button>
-                            </form>
+        <div class="card flex flex-col h-full">
+            <h2 class="text-xl font-bold mb-4" style="color:var(--guild-color,#ffba08)">Pending Invitations</h2>
+            <div class="flex-1 flex flex-col justify-start">
+                <div class="space-y-4 flex-1">
+                    {% for invitation in pending_invitations %}
+                        <div class="border rounded-lg p-4 bg-opacity-80 flex flex-col h-full min-h-[120px]" style="background:rgba(34,34,59,0.7);border-color:#23244a;">
+                            <h3 class="text-lg font-semibold" style="color:var(--guild-color,#ffba08)">{{ invitation.team.title }}</h3>
+                            <p class="text-gray-100 text-sm mt-1">Invited by {{ invitation.from_user.username }}</p>
+                            <div class="mt-3 flex gap-2">
+                                <form method="post" action="{% url 'teamup:handle_invitation' invitation.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="accept">
+                                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow text-sm">Accept</button>
+                                </form>
+                                <form method="post" action="{% url 'teamup:handle_invitation' invitation.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="decline">
+                                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow text-sm">Decline</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                {% empty %}
-                    <p class="text-gray-400">No pending invitations</p>
-                {% endfor %}
+                    {% empty %}
+                        <div class="flex-1 flex items-center justify-center min-h-[120px]">
+                            <p class="text-gray-400">No pending invitations</p>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
-
     <!-- Recommended Users -->
-    <div class="bg-white rounded-xl shadow-lg p-6">
-        <h2 class="text-xl font-bold text-yellow-600 mb-4">Recommended Users</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="card flex flex-col h-full">
+        <h2 class="text-xl font-bold mb-4" style="color:var(--guild-color,#ffba08)">Recommended Users</h2>
+        <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             {% for user_profile in recommended_users %}
-                <div class="border rounded-lg p-4 hover:bg-yellow-50 transition flex flex-col justify-between h-full">
+                <div class="border rounded-lg p-4 hover:bg-yellow-50 transition flex flex-col justify-between h-full bg-opacity-80 min-h-[120px]" style="background:rgba(34,34,59,0.7);border-color:#23244a;">
                     <div>
                         <div class="flex items-start justify-between">
                             <div>
-                                <h3 class="text-lg font-semibold text-yellow-700">{{ user_profile.user.username }}</h3>
-                                <p class="text-gray-600 text-sm mt-1">{{ user_profile.bio|truncatechars:100 }}</p>
+                                <h3 class="text-lg font-semibold" style="color:var(--guild-color,#ffba08)">{{ user_profile.user.username }}</h3>
+                                <p class="text-gray-100 text-sm mt-1">{{ user_profile.bio|truncatechars:100 }}</p>
                             </div>
                             {% if user_profile.availability_status == 'available' %}
                                 <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Available</span>
                             {% endif %}
                         </div>
                         <div class="mt-3">
-                            <h4 class="text-sm font-semibold text-yellow-700">Skills</h4>
+                            <h4 class="text-sm font-semibold" style="color:var(--guild-color,#ffba08)">Skills</h4>
                             <div class="flex flex-wrap gap-1 mt-1">
                                 {% for skill in user_profile.skills.all|slice:":3" %}
                                     <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">{{ skill.name }}</span>
                                 {% endfor %}
                                 {% if user_profile.skills.count > 3 %}
-                                    <span class="text-gray-500 text-xs">+{{ user_profile.skills.count|add:"-3" }} more</span>
+                                    <span class="text-gray-400 text-xs">+{{ user_profile.skills.count|add:"-3" }} more</span>
                                 {% endif %}
                             </div>
                         </div>
                         {% if user_profile.location %}
-                            <p class="text-gray-500 text-sm mt-2">📍 {{ user_profile.location }}</p>
+                            <p class="text-gray-400 text-sm mt-2">📍 {{ user_profile.location }}</p>
                         {% endif %}
                     </div>
                 </div>
