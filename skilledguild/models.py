@@ -48,3 +48,23 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author.username} on {self.post.title}"
+
+class Organiser(models.Model):
+    name = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to='organiser_logos/')
+    description = models.TextField()
+    category = models.CharField(max_length=100, help_text='e.g., Club Chapter, Host Institute')
+    website = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Sponsor(models.Model):
+    name = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to='sponsor_logos/')
+    description = models.TextField()
+    type = models.CharField(max_length=100, help_text='e.g., Title Sponsor, Outreach Partner')
+    website = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name

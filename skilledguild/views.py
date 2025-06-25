@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import UserDashboard, Guild, Post, Comment
+from .models import UserDashboard, Guild, Post, Comment, Organiser, Sponsor
 from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse, HttpResponseForbidden
+from collections import defaultdict
 
 def landing(request):
     return render(request, 'skilledguild/landing.html')
@@ -139,3 +140,18 @@ def create_post(request, guild_id):
             )
             return redirect('guild_detail', guild_id=guild.id)
     return render(request, 'skilledguild/create_post.html', {'guild': guild})
+
+@login_required
+def sponsorverse(request):
+    organisers = Organiser.objects.all()
+    sponsors = Sponsor.objects.all()
+    organiser_groups = defaultdict(list)
+    for o in organisers:
+        organiser_groups[o.category].append(o)
+    sponsor_groups = defaultdict(list)
+    for s in sponsors:
+        sponsor_groups[s.type].append(s)
+    return render(request, 'skilledguild/sponsorverse.html', {
+        'organiser_groups': dict(organiser_groups),
+        'sponsor_groups': dict(sponsor_groups),
+    })

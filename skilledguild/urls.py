@@ -12,4 +12,5 @@ urlpatterns = [
     path('guilds/<int:guild_id>/', views.guild_detail, name='guild_detail'),
     path('guilds/<int:guild_id>/post/<int:post_id>/', views.post_detail, name='post_detail'),
     path('guilds/<int:guild_id>/create/', views.create_post, name='create_post'),
+    path('sponsorverse/', views.sponsorverse, name='sponsorverse'),
 ]
