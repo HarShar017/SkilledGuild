@@ -34,10 +34,10 @@
             <span class="text-xl sm:text-2xl font-bold" style="color:{{ guild.theme_color|default:'#ffba08' }}">{{ guild.name }}</span>
         </div>
         {% if is_member %}
-        <form method="post" action="{% url 'toggle_guild_membership' guild.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1.5 px-5 rounded-full transition-all">Leave Guild</button>
-        </form>
+            <form method="post" action="{% url 'toggle_guild_membership' guild.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1.5 px-5 rounded-full transition-all">Leave Guild</button>
+            </form>
         {% endif %}
     </div>
     <div class="mb-6 text-gray-200 text-base px-2">{{ guild.description }}</div>
