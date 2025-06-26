@@ -4,10 +4,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import UserDashboard, Guild, Post, Comment, Organiser, Sponsor
+from .models import UserDashboard, Guild, Post, Comment, Organiser, Sponsor, Sponsorship, Event, ChatRoom, Message
 from django.views.decorators.csrf import csrf_protect
 from django.http import JsonResponse, HttpResponseForbidden
 from collections import defaultdict
+from .forms import EventForm
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.views.decorators.http import require_POST
 
 def landing(request):
     return render(request, 'skilledguild/landing.html')
@@ -151,7 +155,72 @@ def sponsorverse(request):
     sponsor_groups = defaultdict(list)
     for s in sponsors:
         sponsor_groups[s.type].append(s)
+
+    # Event creation logic
+    if request.method == 'POST' and 'add_event' in request.POST:
+        form = EventForm(request.POST)
+        print('Event form POST data:', request.POST)  # Debug
+        if form.is_valid():
+            print('Event form is valid!')  # Debug
+            event = form.save(commit=False)
+            # Remove organiser requirement
+            try:
+                organiser = request.user.organiser_profile
+            except Exception:
+                organiser = None
+            event.organiser = organiser  # organiser may be None
+            event.save()
+            print('Event saved! ID:', event.id)  # Debug
+            messages.success(request, 'Event added successfully!')
+            return redirect('sponsorverse')
+        else:
+            print('Event form is NOT valid:', form.errors)  # Debug
+    else:
+        form = EventForm()
+
+    events = Event.objects.all().order_by('-created_at')
+
     return render(request, 'skilledguild/sponsorverse.html', {
         'organiser_groups': dict(organiser_groups),
         'sponsor_groups': dict(sponsor_groups),
+        'event_form': form,
+        'events': events,
     })
+
+@login_required
+@require_POST
+def sponsor_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    amount = request.POST.get('amount')
+    message = request.POST.get('message', '')
+    contact_info = request.POST.get('contact_info', '')
+    if not amount or not contact_info:
+        messages.error(request, 'Amount and contact info are required.')
+        return redirect('sponsorverse')
+    try:
+        amount = float(amount)
+    except ValueError:
+        messages.error(request, 'Invalid amount.')
+        return redirect('sponsorverse')
+    sponsorship = Sponsorship.objects.create(
+        event=event,
+        investor=request.user,
+        amount=amount,
+        message=message,
+        contact_info=contact_info
+    )
+    # Find or create chat room for this event, organiser, and sponsor
+    organiser_user = event.organiser.user if event.organiser and event.organiser.user else None
+    sponsor_user = request.user
+    chatroom = ChatRoom.objects.filter(event=event, users=organiser_user).filter(users=sponsor_user).first() if organiser_user else None
+    if not chatroom and organiser_user:
+        chatroom = ChatRoom.objects.create(event=event)
+        chatroom.users.add(organiser_user, sponsor_user)
+        chatroom.save()
+        Message.objects.create(
+            chatroom=chatroom,
+            sender=organiser_user,
+            content=f"Welcome! This chat is for {sponsor_user.username} and {organiser_user.username} to discuss the sponsorship of '{event.name}'.",
+        )
+    messages.success(request, 'Sponsorship successful!')
+    return redirect('sponsorverse')

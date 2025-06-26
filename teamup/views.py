@@ -5,32 +5,47 @@ from django.db.models import Q, Count, F, FloatField, ExpressionWrapper
 from django.contrib.auth.models import User
 from .models import TeamUpProfile, Team, TeamInvitation, Skill, TeamChat, TeamMessage
 from .forms import TeamUpProfileForm, TeamCreationForm, TeamInvitationForm
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
+from django.core.serializers import serialize
 from django.utils import timezone
+from django.template.loader import render_to_string
+from bs4 import BeautifulSoup
 
 @login_required
 def dashboard(request):
     profile = request.user.teamup_profile
     teams = request.user.teams.all()
     created_teams = request.user.created_teams.all()
-    # Only pending invitations for the user
     pending_invitations = request.user.received_invitations.filter(status='pending')
     user_skills = profile.skills.all()
     user_interests = profile.interests.all()
+    
+    # Get recommended users excluding those already invited to any team
+    invited_user_ids = TeamInvitation.objects.filter(
+        from_user=request.user, 
+        status='pending'
+    ).values_list('to_user_id', flat=True)
+    
     recommended_users = TeamUpProfile.objects.filter(
         Q(skills__in=user_interests) | Q(interests__in=user_skills)
-    ).exclude(user=request.user).distinct()
-    # Only pending invites for 'Invited' status
-    sent_invites = TeamInvitation.objects.filter(from_user=request.user, status='pending')
-    sent_invite_keys = set(f"{invite.to_user_id},{invite.team_id}" for invite in sent_invites)
+    ).exclude(user=request.user).exclude(user_id__in=invited_user_ids).distinct()
+    
+    # Sent invitations for all teams by this user
+    sent_invitations = TeamInvitation.objects.filter(from_user=request.user, status='pending')
+    
     context = {
         'profile': profile,
         'teams': teams,
         'created_teams': created_teams,
         'pending_invitations': pending_invitations,
         'recommended_users': recommended_users,
-        'sent_invite_keys': sent_invite_keys,
+        'sent_invitations': sent_invitations,
     }
+    if request.GET.get('ajax') == '1':
+        html = render_to_string('teamup/dashboard.html', context, request=request)
+        soup = BeautifulSoup(html, 'html.parser')
+        received = soup.find(id='received-invitations')
+        return JsonResponse({'html': str(received)})
     return render(request, 'teamup/dashboard.html', context)
 
 @login_required
@@ -43,8 +58,22 @@ def profile_setup(request):
             return redirect('teamup:dashboard')
     else:
         form = TeamUpProfileForm(instance=request.user.teamup_profile)
-    
-    context = {'form': form}
+    # Add recommended users and invite logic for consistency
+    profile = request.user.teamup_profile
+    teams = request.user.teams.all()
+    user_skills = profile.skills.all()
+    user_interests = profile.interests.all()
+    recommended_users = TeamUpProfile.objects.filter(
+        Q(skills__in=user_interests) | Q(interests__in=user_skills)
+    ).exclude(user=request.user).distinct()
+    sent_invites = TeamInvitation.objects.filter(from_user=request.user, status='pending')
+    sent_invite_keys = set(f"{invite.to_user_id},{invite.team_id}" for invite in sent_invites)
+    context = {
+        'form': form,
+        'recommended_users': recommended_users,
+        'teams': teams,
+        'sent_invite_keys': sent_invite_keys,
+    }
     return render(request, 'teamup/profile_setup.html', context)
 
 @login_required
@@ -119,6 +148,13 @@ def team_detail(request, team_id):
         to_user=request.user,
         status='pending'
     ).first()
+    # Recommended users for this team (not already members or invited)
+    user_skills = request.user.teamup_profile.skills.all()
+    user_interests = request.user.teamup_profile.interests.all()
+    recommended_users = TeamUpProfile.objects.filter(
+        Q(skills__in=team.required_skills.all()) | Q(interests__in=team.required_skills.all())
+    ).exclude(user__in=team.members.all()).exclude(user=request.user).distinct()
+    sent_invite_keys = set(f"{invite.to_user_id},{invite.team_id}" for invite in team.invitations.filter(status='pending'))
     context = {
         'team': team,
         'is_member': is_member,
@@ -127,6 +163,8 @@ def team_detail(request, team_id):
         'pending_invitations': pending_invitations,
         'chat': chat,
         'messages': messages_qs,
+        'recommended_users': recommended_users,
+        'sent_invite_keys': sent_invite_keys,
     }
     return render(request, 'teamup/team_detail.html', context)
 
@@ -176,19 +214,73 @@ def handle_invitation(request, invitation_id):
     return redirect('teamup:dashboard')
 
 @login_required
+def send_unified_invitation(request):
+    """Unified invitation system with team dropdown"""
+    if request.method == 'POST':
+        team_id = request.POST.get('team_id')
+        user_id = request.POST.get('user_id')
+        
+        try:
+            team = get_object_or_404(Team, id=team_id)
+            to_user = get_object_or_404(User, id=user_id)
+            
+            # Check if user is a member of the team
+            if request.user not in team.members.all():
+                return JsonResponse({
+                    'success': False, 
+                    'error': 'You must be a team member to invite others.'
+                }, status=403)
+            
+            # Use get_or_create to prevent duplicates
+            invitation, created = TeamInvitation.objects.get_or_create(
+                team=team,
+                to_user=to_user,
+                defaults={
+                    'from_user': request.user,
+                    'status': 'pending'
+                }
+            )
+            
+            if created:
+                return JsonResponse({
+                    'success': True,
+                    'message': f'Invitation sent to {to_user.username} for {team.title}'
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Invitation already exists for this user and team.'
+                }, status=400)
+                
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': 'An error occurred while sending the invitation.'
+            }, status=500)
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method.'}, status=405)
+
+@login_required
+def cancel_invitation(request, invitation_id):
+    """Cancel a sent invitation"""
+    invitation = get_object_or_404(TeamInvitation, id=invitation_id, from_user=request.user, status='pending')
+    invitation.delete()
+    messages.success(request, 'Invitation cancelled successfully.')
+    return redirect('teamup:dashboard')
+
+@login_required
 def invite_user_from_dashboard(request):
     if request.method == 'POST':
         team_id = request.POST.get('team_id')
         user_id = request.POST.get('user_id')
         team = get_object_or_404(Team, id=team_id)
         to_user = get_object_or_404(User, id=user_id)
-        # Only allow inviting if the sender is a member of the team
         if request.user not in team.members.all():
             return JsonResponse({'success': False, 'error': 'You must be a team member to invite.'}, status=403)
-        # Prevent duplicate pending invitations
+        # Only block if a pending invite exists
         if TeamInvitation.objects.filter(team=team, to_user=to_user, status='pending').exists():
             return JsonResponse({'success': False, 'error': 'Invitation already sent.'}, status=400)
-        TeamInvitation.objects.create(team=team, from_user=request.user, to_user=to_user)
+        TeamInvitation.objects.create(team=team, from_user=request.user, to_user=to_user, status='pending')
         return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Invalid request.'}, status=400)
 
@@ -213,3 +305,45 @@ def team_chat(request, team_id):
         'messages': messages_qs,
     }
     return render(request, 'teamup/team_chat.html', context)
+
+@login_required
+def team_chat_messages(request, team_id):
+    team = get_object_or_404(Team, id=team_id)
+    if request.user not in team.members.all():
+        return JsonResponse({'error': 'Not authorized'}, status=403)
+    chat = getattr(team, 'chat', None)
+    if not chat:
+        return JsonResponse({'messages': []})
+    messages = chat.messages.select_related('sender').order_by('timestamp')
+    data = [
+        {
+            'sender': m.sender.username,
+            'avatar': m.sender.teamup_profile.github_profile if hasattr(m.sender, 'teamup_profile') and m.sender.teamup_profile.github_profile else '',
+            'timestamp': m.timestamp.strftime('%b %d, %H:%M'),
+            'content': m.content,
+        }
+        for m in messages
+    ]
+    return JsonResponse({'messages': data})
+
+@login_required
+def send_team_invite(request):
+    if request.method == "POST":
+        team_id = request.POST.get('team_id')
+        user_id = request.POST.get('user_id')
+        team = Team.objects.get(id=team_id)
+        receiver = User.objects.get(id=user_id)
+        existing = TeamInvitation.objects.filter(team=team, receiver=receiver).order_by('-created_at').first()
+        if existing and existing.status in ['pending', 'accepted']:
+            return JsonResponse({'success': False, 'error': 'Already invited.'})
+        TeamInvitation.objects.create(sender=request.user, receiver=receiver, team=team)
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Invalid request.'})
+
+@login_required
+def cancel_invite(request, invite_id):
+    invite = get_object_or_404(TeamInvitation, id=invite_id, from_user=request.user)
+    invite.delete()
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
+    return redirect('teamup:dashboard')

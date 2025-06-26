@@ -85,6 +85,9 @@ class TeamInvitation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     message = models.TextField(blank=True)
 
+    class Meta:
+        unique_together = ['team', 'to_user']
+
     def __str__(self):
         return f"Invitation to {self.to_user.username} for {self.team.title}"
 

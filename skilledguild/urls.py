@@ -13,4 +13,7 @@ urlpatterns = [
     path('guilds/<int:guild_id>/post/<int:post_id>/', views.post_detail, name='post_detail'),
     path('guilds/<int:guild_id>/create/', views.create_post, name='create_post'),
     path('sponsorverse/', views.sponsorverse, name='sponsorverse'),
+    path('sponsorverse/sponsor/<int:event_id>/', views.sponsor_event, name='sponsor_event'),
+    path('', views.quests_orgg_dashboard, name='quests_orgg'),
+    
 ]

@@ -16,7 +16,7 @@
 
 .navbar-logo {
     font-family: "Special Gothic Expanded One", sans-serif;
-    font-size: 2em;
+    font-size: 1.7em;
     font-style: italic;
     font-weight: 800;
     letter-spacing: 2px;
@@ -67,9 +67,9 @@
     width: 17vw;
     min-width: 200px;
     max-width: 270px;
-    background: linear-gradient(160deg, #11121f 80%, #23244a 100%);
+    background: linear-gradient(180deg, #181828 70%, #23244a 100%);
     padding: 2.5rem 0 2.5rem 0.5rem;
-    box-shadow: 2px 0 16px #0005;
+    box-shadow: 0 4px 24px 0 #000a, 0 12px 48px 0 #181828cc;
     border-right: 1.5px solid #23244a;
     display: flex;
     flex-direction: column;
@@ -78,6 +78,7 @@
     position: sticky;
     top: 64px;
     height: calc(100vh - 64px);
+    transition: box-shadow 0.3s, background 0.3s;
 }
 
 .sidebar-menu {
@@ -96,24 +97,30 @@
     font-size: 1.13rem;
     padding: 12px 28px 12px 20px;
     border-radius: 8px 0 0 8px;
-    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    transition: background 0.22s, color 0.22s, box-shadow 0.22s, filter 0.22s;
     display: flex;
     align-items: center;
     gap: 0.8em;
     font-weight: 500;
     position: relative;
+    box-shadow: none;
+    filter: none;
 }
 
 .sidebar-menu li a:hover {
-    background: rgba(255, 60, 65, 0.13);
-    color: #ff3c41;
-    box-shadow: 0 0 12px #ff3c4180;
-    text-shadow: 0 0 4px #ff3c41aa;
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffba08;
+    box-shadow: 0 2px 12px 0 #0008;
+    filter: brightness(1.08) saturate(1.1);
+    text-shadow: 0 0 8px #23244a55;
 }
 
-.sidebar-menu li a:active {
-    background: #23244a;
+.sidebar-menu li.active a, .sidebar-menu li a.active {
+    background: linear-gradient(90deg, #23244a 60%, #181828 100%);
     color: #ffba08;
+    box-shadow: 0 0 16px 2px #23244a88;
+    filter: brightness(1.12) saturate(1.2);
+    border-left: 4px solid #ffba08;
 }
 
 @media (max-width: 1100px) {

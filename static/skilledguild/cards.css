@@ -1,0 +1,44 @@
+.user-card, .team-card, .invite-card, .card {
+    transition: all 0.3s ease-in-out;
+}
+
+.user-card:hover, .team-card:hover, .invite-card:hover {
+    background: linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(34,34,59,0.96) 100%);
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+    border-color: #ffba08;
+}
+
+.card:hover {
+    box-shadow: 0 12px 40px 0 rgba(0,0,0,0.3);
+    transform: translateY(-3px);
+}
+
+.invite-dropdown-btn:hover {
+    transform: scale(1.02);
+}
+
+.invitation-card {
+    animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.team-card {
+    background: linear-gradient(135deg, rgba(31, 41, 55, 0.9) 0%, rgba(17, 24, 39, 0.95) 100%);
+    border: 1px solid rgba(75, 85, 99, 0.5);
+}
+
+.team-card:hover {
+    border-color: #ffba08;
+    background: linear-gradient(135deg, rgba(31, 41, 55, 1) 0%, rgba(17, 24, 39, 1) 100%);
+}

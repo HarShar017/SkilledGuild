@@ -16,11 +16,72 @@
     </div>
     <div class="flex justify-center mb-8">
       <div id="toggle-group" class="inline-flex rounded-full bg-gray-800 shadow">
-        <button id="organiser-btn" class="toggle-btn px-6 py-2 font-semibold rounded-l-full focus:outline-none transition-all text-gray-200 bg-yellow-400 text-gray-900" onclick="showSection('organiser')">Organiser</button>
-        <button id="sponsor-btn" class="toggle-btn px-6 py-2 font-semibold rounded-r-full focus:outline-none transition-all text-gray-200 hover:bg-yellow-300" onclick="showSection('sponsor')">Investor</button>
+        <button id="organiser-btn" class="toggle-btn px-6 py-2 font-semibold rounded-l-full focus:outline-none transition-all text-gray-200 bg-yellow-400 text-gray-900" onclick="showSection('organiser')">As Organiser</button>
+        <button id="sponsor-btn" class="toggle-btn px-6 py-2 font-semibold rounded-r-full focus:outline-none transition-all text-gray-200 hover:bg-yellow-300" onclick="showSection('sponsor')">As Investor</button>
       </div>
     </div>
     <div id="organiser-section">
+      <!-- Add Event Button and Modal -->
+      <div class="flex justify-end mb-4">
+        <button onclick="document.getElementById('addEventModal').style.display='block'" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-6 rounded-full shadow transition-all">+ Add Event</button>
+      </div>
+      <!-- Modal -->
+      <div id="addEventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+        <div class="bg-gray-900 rounded-xl shadow-lg p-8 w-full max-w-lg relative">
+          <button onclick="document.getElementById('addEventModal').style.display='none'" class="absolute top-2 right-4 text-gray-400 hover:text-yellow-400 text-2xl">&times;</button>
+          <h3 class="text-xl font-bold mb-4 text-yellow-400">Add New Event</h3>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="add_event" value="1">
+            <div class="mb-3">
+              {{ event_form.name.label_tag }}
+              {{ event_form.name }}
+              {% for error in event_form.name.errors %}<div class="text-red-400 text-xs">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              {{ event_form.description.label_tag }}
+              {{ event_form.description }}
+              {% for error in event_form.description.errors %}<div class="text-red-400 text-xs">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              {{ event_form.date.label_tag }}
+              {{ event_form.date }}
+              {% for error in event_form.date.errors %}<div class="text-red-400 text-xs">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              {{ event_form.sponsorship_goals.label_tag }}
+              {{ event_form.sponsorship_goals }}
+              {% for error in event_form.sponsorship_goals.errors %}<div class="text-red-400 text-xs">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              {{ event_form.contact_info.label_tag }}
+              {{ event_form.contact_info }}
+              {% for error in event_form.contact_info.errors %}<div class="text-red-400 text-xs">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-6 rounded-full shadow transition-all">Save Event</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- Organiser Events List -->
+      <div class="mb-8">
+        <h4 class="text-lg font-bold text-yellow-300 mb-4">All Events ({{ events|length }})</h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 justify-items-center w-full">
+          {% for event in events %}
+          <div class="bg-gray-900 rounded-2xl shadow-lg p-6 flex flex-col items-center w-full max-w-xs border border-yellow-400">
+            <div class="text-lg font-bold text-yellow-200 mb-1">{{ event.name }}</div>
+            <div class="text-gray-300 text-sm mb-2">{{ event.description }}</div>
+            <div class="text-xs text-yellow-400 mb-1">Date: {{ event.date }}</div>
+            <div class="text-xs text-yellow-400 mb-1">Sponsorship: {{ event.sponsorship_goals }}</div>
+            <div class="text-xs text-gray-400">Contact: {{ event.contact_info }}</div>
+          </div>
+          {% empty %}
+          <div class="text-gray-400 col-span-3">No events yet.</div>
+          {% endfor %}
+        </div>
+      </div>
+      <!-- ...existing organiser cards... -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 justify-items-center w-full">
         <!-- Placeholder organiser/sponsor cards -->
         <div class="bg-gray-900 rounded-2xl shadow-lg p-6 flex flex-col items-center w-full max-w-xs">
@@ -48,23 +109,67 @@
     </div>
     <div id="sponsor-section" style="display:none;">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 justify-items-center w-full">
-        <!-- Placeholder event/guild request cards -->
+        {% for event in events %}
         <div class="bg-gray-900 rounded-2xl shadow-lg p-6 flex flex-col w-full max-w-xs">
-          <div class="text-lg font-bold text-yellow-200 mb-1">Hackathon 2025</div>
-          <div class="text-gray-300 text-sm mb-4">A 24-hour coding event for students and professionals.</div>
-          <button class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded-full shadow transition-all self-end">Sponsor Us</button>
+          <div class="text-lg font-bold text-yellow-200 mb-1">{{ event.name }}</div>
+          <div class="text-gray-300 text-sm mb-4">{{ event.description }}</div>
+          <button class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded-full shadow transition-all self-end" onclick="openSponsorModal({{ event.id }}, '{{ event.name|escapejs }}')">Sponsor Us</button>
         </div>
-        <div class="bg-gray-900 rounded-2xl shadow-lg p-6 flex flex-col w-full max-w-xs">
-          <div class="text-lg font-bold text-yellow-200 mb-1">AI Club Annual Meetup</div>
-          <div class="text-gray-300 text-sm mb-4">Connect with AI enthusiasts and industry leaders.</div>
-          <button class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded-full shadow transition-all self-end">Sponsor Us</button>
-        </div>
-        <div class="bg-gray-900 rounded-2xl shadow-lg p-6 flex flex-col w-full max-w-xs">
-          <div class="text-lg font-bold text-yellow-200 mb-1">Open Source Fest</div>
-          <div class="text-gray-300 text-sm mb-4">Celebrating open source contributions and projects.</div>
-          <button class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-4 rounded-full shadow transition-all self-end">Sponsor Us</button>
+        {% endfor %}
+      </div>
+      <!-- Sponsor Modal -->
+      <div id="sponsorModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+        <div class="bg-gray-900 rounded-xl shadow-lg p-8 w-full max-w-lg relative">
+          <button onclick="closeSponsorModal()" class="absolute top-2 right-4 text-gray-400 hover:text-yellow-400 text-2xl">&times;</button>
+          <h3 class="text-xl font-bold mb-4 text-yellow-400">Sponsor <span id="sponsorEventName"></span></h3>
+          <form id="sponsorForm" method="post" action="/sponsorverse/sponsor/0/">
+            {% csrf_token %}
+            <input type="hidden" name="event_id" id="sponsorEventId" value="0">
+            <div id="sponsorFormDebug" class="text-red-400 text-xs mb-2"></div>
+            <div class="mb-3">
+              <label for="amount" class="block text-sm font-semibold mb-1">Sponsorship Amount</label>
+              <input type="number" step="0.01" min="0" name="amount" id="sponsorAmount" class="w-full rounded px-3 py-2 bg-gray-800 text-white" required>
+            </div>
+            <div class="mb-3">
+              <label for="message" class="block text-sm font-semibold mb-1">Message (optional)</label>
+              <textarea name="message" id="sponsorMessage" class="w-full rounded px-3 py-2 bg-gray-800 text-white" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="contact_info" class="block text-sm font-semibold mb-1">Contact Info</label>
+              <input type="text" name="contact_info" id="sponsorContact" class="w-full rounded px-3 py-2 bg-gray-800 text-white" required>
+            </div>
+            <div class="flex justify-end">
+              <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-2 px-6 rounded-full shadow transition-all">Sponsor</button>
+            </div>
+          </form>
         </div>
       </div>
+      <script>
+      let currentSponsorEventId = null;
+      function openSponsorModal(eventId, eventName) {
+        currentSponsorEventId = eventId;
+        document.getElementById('sponsorEventName').textContent = eventName;
+        document.getElementById('sponsorModal').style.display = 'flex';
+        document.getElementById('sponsorForm').action = `/sponsorverse/sponsor/${eventId}/`;
+        document.getElementById('sponsorEventId').value = eventId;
+        document.getElementById('sponsorFormDebug').textContent = '';
+      }
+      // Optionally, add a submit handler for debug
+      document.getElementById('sponsorForm').onsubmit = function(e) {
+        if (!document.getElementById('sponsorAmount').value || !document.getElementById('sponsorContact').value) {
+          document.getElementById('sponsorFormDebug').textContent = 'Amount and contact info are required.';
+          e.preventDefault();
+        }
+      };
+      function closeSponsorModal() {
+        document.getElementById('sponsorModal').style.display = 'none';
+        document.getElementById('sponsorForm').reset();
+      }
+      // Close modal on background click
+      document.getElementById('sponsorModal').addEventListener('click', function(event) {
+        if (event.target === this) closeSponsorModal();
+      });
+      </script>
     </div>
   </div>
 </div>
@@ -88,6 +193,13 @@ function showSection(section) {
     sponsorBtn.classList.remove('hover:bg-yellow-300', 'text-gray-200');
     organiserBtn.classList.remove('bg-yellow-400', 'text-gray-900');
     organiserBtn.classList.add('hover:bg-yellow-300', 'text-gray-200');
+  }
+}
+// Modal close on background click
+window.onclick = function(event) {
+  var modal = document.getElementById('addEventModal');
+  if (event.target == modal) {
+    modal.style.display = "none";
   }
 }
 </script>
