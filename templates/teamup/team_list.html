@@ -4,41 +4,41 @@
 {% block title %}Teams - TeamUp{% endblock %}
 
 {% block content %}
-<div class="ml-64 mt-16 px-4 pb-8 max-w-6xl mx-auto">
+<div class="w-full max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-yellow-600">Teams</h1>
+        <h1 class="text-3xl font-bold" style="color:var(--guild-color,#ffba08)">Teams</h1>
         <a href="{% url 'teamup:create_team' %}" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow">Create New Team</a>
     </div>
     <!-- Filters -->
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <h2 class="text-xl font-semibold text-yellow-700 mb-4">Filters</h2>
+    <div class="bg-[#23244a] rounded-xl shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4" style="color:var(--guild-color,#ffba08)">Filters</h2>
         <form method="get" class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-yellow-700 mb-2">Filter by Skills</label>
-                <select name="skills" multiple class="w-full form-multiselect rounded-md border-gray-300">
+                <label class="block text-sm font-medium mb-2" style="color:var(--guild-color,#ffba08)">Filter by Skills</label>
+                <select name="skills" multiple class="w-full form-multiselect rounded-md bg-gray-800 text-white border-gray-700">
                     {% for skill in all_skills %}
                         <option value="{{ skill.id }}" {% if skill.id|stringformat:"i" in request.GET.getlist 'skills' %}selected{% endif %}>{{ skill.name }}</option>
                     {% endfor %}
                 </select>
-                <p class="text-gray-500 text-xs mt-1">Hold Ctrl/Cmd to select multiple skills</p>
+                <p class="text-gray-400 text-xs mt-1">Hold Ctrl/Cmd to select multiple skills</p>
             </div>
             <div class="flex justify-end">
-                <button type="submit" class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg shadow">Apply Filters</button>
+                <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow">Apply Filters</button>
             </div>
         </form>
     </div>
     <!-- Teams Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for team in teams %}
-            <div class="bg-white rounded-xl shadow p-6 hover:shadow-xl transition flex flex-col justify-between h-full">
+            <div class="bg-[#23244a] rounded-xl shadow p-6 hover:shadow-xl transition flex flex-col justify-between h-full">
                 <div>
                     <div class="flex justify-between items-start">
-                        <h2 class="text-xl font-semibold text-yellow-700"><a href="{% url 'teamup:team_detail' team.id %}">{{ team.title }}</a></h2>
+                        <h2 class="text-xl font-semibold" style="color:var(--guild-color,#ffba08)"><a href="{% url 'teamup:team_detail' team.id %}">{{ team.title }}</a></h2>
                         <span class="px-2 py-1 text-sm rounded-full {% if team.status == 'open' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">{{ team.get_status_display }}</span>
                     </div>
-                    <p class="text-gray-600 mt-2">{{ team.description|truncatechars:150 }}</p>
+                    <p class="text-gray-100 mt-2">{{ team.description|truncatechars:150 }}</p>
                     <div class="mt-4">
-                        <h3 class="text-sm font-semibold text-yellow-700 mb-2">Required Skills</h3>
+                        <h3 class="text-sm font-semibold mb-2" style="color:var(--guild-color,#ffba08)">Required Skills</h3>
                         <div class="flex flex-wrap gap-2">
                             {% for skill in team.required_skills.all %}
                                 <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-sm">{{ skill.name }}</span>
@@ -47,8 +47,8 @@
                     </div>
                 </div>
                 <div class="mt-4 flex justify-between items-center">
-                    <span class="text-sm text-gray-500">{{ team.members.count }}/{{ team.max_members }} members</span>
-                    <a href="{% url 'teamup:team_detail' team.id %}" class="text-yellow-600 hover:text-yellow-700 text-sm font-medium">View Details →</a>
+                    <span class="text-sm text-gray-400">{{ team.members.count }}/{{ team.max_members }} members</span>
+                    <a href="{% url 'teamup:team_detail' team.id %}" class="text-yellow-400 hover:text-yellow-500 text-sm font-medium">View Details →</a>
                 </div>
             </div>
         {% empty %}

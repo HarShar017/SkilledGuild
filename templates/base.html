@@ -7,12 +7,14 @@
     <title>SkilledGuild</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{% static 'skilledguild/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'skilledguild/navbar_sidebar.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Special+Gothic+Expanded+One&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-900 text-white min-h-screen">
     <!-- Top Navbar -->
     <nav class="navbar fixed top-0 left-0 right-0 z-40 flex items-center justify-between bg-[#0b0c2a] h-16 px-6 shadow-lg border-b border-gray-800">
-        <div class="navbar-logo text-2xl font-bold text-yellow-400 tracking-wide">SkilledGuild</div>
+        <div class="navbar-logo"><span>Skilled</span><span class="accent">Guild </span></div>
         <ul class="navbar-menu flex items-center gap-6">
             <li><a href="{% url 'dashboard' %}" class="navbar-link {% if request.resolver_match.url_name == 'dashboard' %}text-yellow-400 font-bold{% else %}hover:text-yellow-400{% endif %} transition"><i class="fa-solid fa-gauge"></i> <span class="hidden sm:inline">Dashboard</span></a></li>
             <li><a href="#" class="navbar-link hover:text-yellow-400 transition"><i class="fa-solid fa-circle-info"></i> <span class="hidden sm:inline">About</span></a></li>
@@ -24,7 +26,7 @@
     <aside class="sidebar fixed top-16 left-0 bottom-0 w-64 bg-gradient-to-b from-[#11121f] to-[#23244a] shadow-lg border-r border-gray-800 z-30 flex flex-col py-8 px-4">
         <ul class="sidebar-menu flex flex-col gap-6">
             <li><a href="{% url 'guilds' %}" class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'guilds' or request.resolver_match.url_name == 'guild_detail' or request.resolver_match.url_name == 'create_post' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i class="fa-solid fa-users"></i> Guilds</a></li>
-            <li><a href="#" class="flex items-center gap-3 text-lg sidebar-link text-gray-200 hover:text-yellow-400 transition"><i class="fa-solid fa-people-group"></i> Team-Up</a></li>
+            <li><a href="{% url 'teamup:dashboard' %}" class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.app_name == 'teamup' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i class="fa-solid fa-people-group"></i> Team-Up</a></li>
             <li><a href="#" class="flex items-center gap-3 text-lg sidebar-link text-gray-200 hover:text-yellow-400 transition"><i class="fa-solid fa-scroll"></i> Quests</a></li>
             <li><a href="{% url 'sponsorverse' %}" class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'sponsorverse' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i class="fa-solid fa-hand-holding-dollar"></i> SponsorVerse</a></li>
         </ul>

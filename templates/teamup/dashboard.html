@@ -4,9 +4,9 @@
 {% block title %}TeamUp Dashboard{% endblock %}
 
 {% block content %}
-<div class="ml-64 mt-16 px-4 pb-8 max-w-6xl mx-auto flex flex-col gap-8 min-h-[80vh]">
+<div class="w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-8 min-h-[80vh]">
     <!-- Profile Section -->
-    <div class="card mb-8 flex flex-col h-full">
+    <div class="card mb-8 flex flex-col h-full bg-[#23244a] shadow-lg rounded-xl p-6">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-2xl font-bold" style="color:var(--guild-color,#ffba08)">Your TeamUp Profile</h2>
             <a href="{% url 'teamup:profile_setup' %}" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow transition">Edit Profile</a>
@@ -45,7 +45,7 @@
     <!-- Teams Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 auto-rows-fr">
         <!-- Your Teams -->
-        <div class="card flex flex-col h-full">
+        <div class="card flex flex-col h-full bg-[#23244a] shadow-lg rounded-xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-xl font-bold" style="color:var(--guild-color,#ffba08)">Your Teams</h2>
                 <a href="{% url 'teamup:create_team' %}" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow transition">Create Team</a>
@@ -73,7 +73,7 @@
             </div>
         </div>
         <!-- Pending Invitations -->
-        <div class="card flex flex-col h-full">
+        <div class="card flex flex-col h-full bg-[#23244a] shadow-lg rounded-xl p-6">
             <h2 class="text-xl font-bold mb-4" style="color:var(--guild-color,#ffba08)">Pending Invitations</h2>
             <div class="flex-1 flex flex-col justify-start">
                 <div class="space-y-4 flex-1">
@@ -104,7 +104,7 @@
         </div>
     </div>
     <!-- Recommended Users -->
-    <div class="card flex flex-col h-full">
+    <div class="card flex flex-col h-full bg-[#23244a] shadow-lg rounded-xl p-6">
         <h2 class="text-xl font-bold mb-4" style="color:var(--guild-color,#ffba08)">Recommended Users</h2>
         <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
             {% for user_profile in recommended_users %}
@@ -134,6 +134,22 @@
                             <p class="text-gray-400 text-sm mt-2">📍 {{ user_profile.location }}</p>
                         {% endif %}
                     </div>
+                    {% if teams %}
+                    <div class="flex flex-col gap-2 mt-4">
+                        {% for team in teams %}
+                            {% with invite_key=user_profile.user.id|stringformat:"s"|add:","|add:team.id|stringformat:"s" %}
+                                <form method="post" action="{% url 'teamup:invite_user_from_dashboard' %}" class="flex justify-end invite-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{ user_profile.user.id }}">
+                                    <input type="hidden" name="team_id" value="{{ team.id }}">
+                                    <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-1 rounded-full shadow text-sm transition ml-auto disabled:opacity-60 disabled:cursor-not-allowed" {% if invite_key in sent_invite_keys %}disabled{% endif %}>
+                                        {% if invite_key in sent_invite_keys %}Invited{% else %}Invite to {{ team.title }}{% endif %}
+                                    </button>
+                                </form>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             {% empty %}
                 <p class="text-gray-400 col-span-3">No recommended users found based on your interests and skills</p>
@@ -142,3 +158,22 @@
     </div>
 </div>
 {% endblock %}
+<script>
+// AJAX invite form submission
+const forms = document.querySelectorAll('.invite-form');
+forms.forEach(form => {
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Invited';
+        const data = new FormData(form);
+        const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+        await fetch(form.action, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrf },
+            body: data
+        });
+    });
+});
+</script>

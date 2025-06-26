@@ -88,6 +88,23 @@ class TeamInvitation(models.Model):
     def __str__(self):
         return f"Invitation to {self.to_user.username} for {self.team.title}"
 
+class TeamChat(models.Model):
+    team = models.OneToOneField(Team, on_delete=models.CASCADE, related_name='chat')
+    participants = models.ManyToManyField(User, related_name='team_chats')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Chat for {self.team.title}"
+
+class TeamMessage(models.Model):
+    chat = models.ForeignKey(TeamChat, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.username}: {self.content[:30]}"
+
 @receiver(post_save, sender=User)
 def create_teamup_profile(sender, instance, created, **kwargs):
     if created:

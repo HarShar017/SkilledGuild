@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login / Register - SkilledGuild</title>
     <link rel="stylesheet" href="{% static 'skilledguild/landing.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Special+Gothic+Expanded+One&display=swap" rel="stylesheet">
     <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Special+Gothic+Expanded+One&display=swap');
     html { scroll-behavior: smooth; }
@@ -126,6 +127,20 @@
     }
     .switch-link { color: #e63946; cursor: pointer; text-decoration: underline; }
     .error { color: #e63946; margin-bottom: 0.7rem; text-align: center; font-size: 0.97rem; }
+    .navbar-logo {
+      font-family: "Special Gothic Expanded One", sans-serif;
+      font-size: 2em;
+      font-style:italic;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+    .navbar-logo .accent {
+      background: linear-gradient(90deg, #ff0404 0%, #fd8f05 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
     @media (max-width: 600px) {
       .auth-container { padding: 0.9rem 0.3rem; border-radius: 10px; max-width: 98vw; }
       .main-auth-flex { padding: 0 0.1rem; }

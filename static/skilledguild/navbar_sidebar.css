@@ -15,11 +15,19 @@
 }
 
 .navbar-logo {
-    font-size: 2rem;
-    color: #ffba08;
-    font-weight: 700;
+    font-family: "Special Gothic Expanded One", sans-serif;
+    font-size: 2em;
+    font-style: italic;
+    font-weight: 800;
     letter-spacing: 2px;
-    text-shadow: 0 0 8px #ffba0855;
+    color: #fff;
+}
+
+.navbar-logo .accent {
+    background: linear-gradient(90deg, #ff0404 0%, #fd8f05 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .navbar-menu {

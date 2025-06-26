@@ -1,7 +1,20 @@
 from django import forms
 from .models import TeamUpProfile, Team, TeamInvitation, Skill
 
+SAMPLE_TAGS = [
+    "Python", "Web Development", "AI", "Design", "Hackathons", "Robotics", "Machine Learning", "Data Science", "UI/UX", "Mobile Apps", "Game Dev", "Cloud", "Cybersecurity"
+]
+
 class TeamUpProfileForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Populate skills/interests with sample tags if empty
+        if Skill.objects.count() == 0:
+            for tag in SAMPLE_TAGS:
+                Skill.objects.get_or_create(name=tag)
+        self.fields['skills'].queryset = Skill.objects.all().order_by('name')
+        self.fields['interests'].queryset = Skill.objects.all().order_by('name')
+
     class Meta:
         model = TeamUpProfile
         fields = ['bio', 'skills', 'interests', 'city', 'state', 'country',
@@ -21,6 +34,13 @@ class TeamUpProfileForm(forms.ModelForm):
         }
 
 class TeamCreationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if Skill.objects.count() == 0:
+            for tag in SAMPLE_TAGS:
+                Skill.objects.get_or_create(name=tag)
+        self.fields['required_skills'].queryset = Skill.objects.all().order_by('name')
+
     class Meta:
         model = Team
         fields = ['title', 'description', 'required_skills', 'max_members',
