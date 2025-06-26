@@ -4,19 +4,26 @@
 {% block title %}TeamUp Dashboard{% endblock %}
 
 {% block content %}
+<meta name="csrf-token" content="{{ csrf_token }}">
 <link rel="stylesheet" href="{% static 'skilledguild/cards.css' %}">
+
+<!-- Hidden CSRF form for JavaScript access -->
+<form style="display: none;">
+    {% csrf_token %}
+</form>
+
 <div class="w-full max-w-7xl mx-auto px-4 py-8 flex flex-col gap-8 min-h-[80vh]">
     <!-- Profile Section -->
-    <div class="card mb-8 flex flex-col h-full bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg rounded-xl p-6 transition-all duration-300 hover:shadow-2xl">
+    <div class="card mb-8 flex flex-col h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg rounded-xl p-6 transition-all duration-300 hover:shadow-2xl overflow-hidden">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-2xl font-bold" style="color:var(--guild-color,#ffba08)">Your TeamUp Profile</h2>
+            <h2 class="text-2xl font-bold text-yellow-400">Your TeamUp Profile</h2>
             <a href="{% url 'teamup:profile_setup' %}" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105">Edit Profile</a>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-                <h3 class="text-lg font-semibold mb-2" style="color:var(--guild-color,#ffba08)">Bio</h3>
+                <h3 class="text-lg font-semibold mb-2 text-yellow-400">Bio</h3>
                 <p class="text-gray-100">{{ profile.bio|default:"No bio provided" }}</p>
-                <h3 class="text-lg font-semibold mt-4 mb-2" style="color:var(--guild-color,#ffba08)">Skills</h3>
+                <h3 class="text-lg font-semibold mt-4 mb-2 text-yellow-400">Skills</h3>
                 <div class="flex flex-wrap gap-2">
                     {% for skill in profile.skills.all %}
                         <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm shadow-sm">{{ skill.name }}</span>
@@ -26,7 +33,7 @@
                 </div>
             </div>
             <div>
-                <h3 class="text-lg font-semibold mb-2" style="color:var(--guild-color,#ffba08)">Interests</h3>
+                <h3 class="text-lg font-semibold mb-2 text-yellow-400">Interests</h3>
                 <div class="flex flex-wrap gap-2">
                     {% for interest in profile.interests.all %}
                         <span class="bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full text-sm shadow-sm">{{ interest.name }}</span>
@@ -34,40 +41,51 @@
                         <p class="text-gray-400">No interests added yet</p>
                     {% endfor %}
                 </div>
-                <h3 class="text-lg font-semibold mt-4 mb-2" style="color:var(--guild-color,#ffba08)">Location</h3>
+                <h3 class="text-lg font-semibold mt-4 mb-2 text-yellow-400">Location</h3>
                 <p class="text-gray-100">{{ profile.location|default:"Location not set" }}</p>
-                <h3 class="text-lg font-semibold mt-4 mb-2" style="color:var(--guild-color,#ffba08)">Status</h3>
+                <h3 class="text-lg font-semibold mt-4 mb-2 text-yellow-400">Status</h3>
                 <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm shadow-sm">
                     {{ profile.get_availability_status_display }}
                 </span>
             </div>
         </div>
     </div>
+
     <!-- Teams Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 auto-rows-fr">
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8 auto-rows-fr">
         <!-- Your Teams -->
-        <div class="card flex flex-col h-full bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg rounded-xl p-6 transition-all duration-300 hover:shadow-2xl">
+        <div class="card flex flex-col h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg rounded-xl p-6 transition-shadow duration-300 hover:shadow-2xl overflow-hidden">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-bold" style="color:var(--guild-color,#ffba08)">Your Teams</h2>
+                <h2 class="text-xl font-bold text-yellow-400">Your Teams</h2>
                 <a href="{% url 'teamup:create_team' %}" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105">Create Team</a>
             </div>
-            <div class="flex-1 flex flex-col justify-start">
-                <div class="space-y-4 flex-1">
+            <div class="flex-1 flex flex-col justify-start overflow-auto">
+                <div class="space-y-2 flex-1">
                     {% for team in teams %}
-                        <div class="border border-gray-700 rounded-xl p-4 hover:bg-gray-700 hover:border-yellow-400 transition-all duration-300 bg-gradient-to-r from-gray-800 to-gray-750 flex flex-col h-full min-h-[120px] shadow-md hover:shadow-lg">
+                        <div class="border border-gray-700 rounded-lg p-3 hover:bg-gray-700 hover:border-yellow-400 transition-all duration-300 bg-gradient-to-r from-slate-800 to-slate-700 shadow-sm hover:shadow-md">
                             <a href="{% url 'teamup:team_detail' team.id %}" class="block">
-                                <h3 class="text-lg font-semibold" style="color:var(--guild-color,#ffba08)">{{ team.title }}</h3>
-                                <p class="text-gray-100 text-sm mt-1">{{ team.description|truncatechars:100 }}</p>
-                                <div class="flex flex-wrap gap-2 mt-2">
-                                    {% for skill in team.required_skills.all %}
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <h3 class="text-base font-semibold text-yellow-400">{{ team.title }}</h3>
+                                        <p class="text-gray-300 text-sm mt-1">{{ team.description|truncatechars:60 }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-xs text-gray-400">{{ team.members.count }} member{{ team.members.count|pluralize }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-1 mt-2">
+                                    {% for skill in team.required_skills.all|slice:":4" %}
                                         <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs shadow-sm">{{ skill.name }}</span>
                                     {% endfor %}
+                                    {% if team.required_skills.count > 4 %}
+                                        <span class="text-gray-400 text-xs px-2 py-1">+{{ team.required_skills.count|add:"-4" }} more</span>
+                                    {% endif %}
                                 </div>
                             </a>
                         </div>
                     {% empty %}
-                        <div class="flex-1 flex items-center justify-center min-h-[120px]">
-                            <p class="text-gray-400">You haven't joined any teams yet</p>
+                        <div class="flex-1 flex items-center justify-center min-h-[80px]">
+                            <p class="text-gray-400 text-center">You haven't joined any teams yet</p>
                         </div>
                     {% endfor %}
                 </div>
@@ -75,14 +93,14 @@
         </div>
         
         <!-- Invitations Section -->
-        <div class="card flex flex-col h-full bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg rounded-xl p-6 transition-all duration-300 hover:shadow-2xl">
-            <h2 class="text-xl font-bold mb-4" style="color:var(--guild-color,#ffba08)">Invitations</h2>
-            <div class="flex-1 flex flex-col justify-start">
+        <div class="card flex flex-col h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg rounded-xl p-6 transition-shadow duration-300 hover:shadow-2xl overflow-hidden">
+            <h2 class="text-xl font-bold mb-4 text-yellow-400">Invitations</h2>
+            <div class="flex-1 flex flex-col justify-start overflow-auto">
                 <div class="space-y-6 flex-1">
                     <!-- Sent Invitations -->
                     <div id="sent-invitations">
-                        <h4 class="text-lg font-semibold mb-3" style="color:var(--guild-color,#ffba08)">Sent</h4>
-                        <div class="space-y-2">
+                        <h4 class="text-lg font-semibold mb-3 text-yellow-400">Sent</h4>
+                        <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-none">
                             {% for invite in sent_invitations %}
                                 <div class="invite-card p-3 rounded-lg bg-gradient-to-r from-yellow-900/20 to-yellow-800/20 border border-yellow-700/30 transition-all duration-300 hover:shadow-md" id="sent-invite-{{ invite.id }}">
                                     <div class="flex items-center justify-between">
@@ -90,7 +108,7 @@
                                             <span class="font-semibold text-yellow-300">{{ invite.to_user.username }}</span>
                                             <span class="text-gray-400 text-sm ml-2">→ {{ invite.team.title }}</span>
                                         </div>
-                                        <a href="{% url 'teamup:cancel_invitation' invite.id %}" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs transition-colors duration-200">Cancel</a>
+                                        <button onclick="cancelInvite({{ invite.id }})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs transition-colors duration-200">Cancel</button>
                                     </div>
                                 </div>
                             {% empty %}
@@ -101,11 +119,11 @@
 
                     <!-- Received Invitations -->
                     <div id="received-invitations">
-                        <h4 class="text-lg font-semibold mb-3" style="color:var(--guild-color,#ffba08)">Received</h4>
-                        <div class="space-y-2">
+                        <h4 class="text-lg font-semibold mb-3 text-yellow-400">Received</h4>
+                        <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-none">
                             {% for invitation in pending_invitations %}
                                 <div class="border border-gray-700 rounded-lg p-4 bg-gradient-to-r from-green-900/20 to-green-800/20 border-green-700/30 flex flex-col min-h-[80px] invitation-card transition-all duration-300 hover:shadow-md">
-                                    <h3 class="text-lg font-semibold" style="color:var(--guild-color,#ffba08)">{{ invitation.team.title }}</h3>
+                                    <h3 class="text-lg font-semibold text-yellow-400">{{ invitation.team.title }}</h3>
                                     <p class="text-gray-100 text-sm mt-1">Invited by {{ invitation.from_user.username }}</p>
                                     <div class="mt-3 flex gap-2">
                                         <form method="post" action="{% url 'teamup:handle_invitation' invitation.id %}" class="inline">
@@ -129,24 +147,25 @@
             </div>
         </div>
     </div>
+
     <!-- Recommended Users -->
-    <div class="card flex flex-col h-full bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg rounded-xl p-6 transition-all duration-300 hover:shadow-2xl">
-        <h2 class="text-xl font-bold mb-4" style="color:var(--guild-color,#ffba08)">Recommended Users</h2>
-        <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr" id="recommended-users">
+    <div class="card flex flex-col h-full bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 shadow-lg rounded-xl p-6 transition-shadow duration-300 hover:shadow-xl overflow-hidden">
+        <h2 class="text-xl font-bold mb-6 text-yellow-400">Recommended Users</h2>
+        <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 auto-rows-fr overflow-auto" id="recommended-users">
             {% for user_profile in recommended_users %}
-                <div class="border border-gray-700 rounded-lg p-4 transition-all duration-300 flex flex-col justify-between h-full bg-gradient-to-r from-gray-800/80 to-gray-750/80 min-h-[180px] user-card hover:shadow-lg hover:border-yellow-400" id="user-card-{{ user_profile.user.id }}">
+                <div class="border border-gray-700 rounded-xl p-4 transition-all duration-300 flex flex-col justify-between h-full bg-gradient-to-br from-slate-800 to-slate-900 min-h-[200px] user-card hover:shadow-lg hover:border-yellow-400 hover:shadow-xl relative overflow-hidden" id="user-card-{{ user_profile.user.id }}">
                     <div>
-                        <div class="flex items-start justify-between">
+                        <div class="flex items-start justify-between mb-3">
                             <div>
-                                <h3 class="text-lg font-semibold" style="color:var(--guild-color,#ffba08)">{{ user_profile.user.username }}</h3>
-                                <p class="text-gray-100 text-sm mt-1">{{ user_profile.bio|truncatechars:100 }}</p>
+                                <h3 class="text-lg font-semibold text-yellow-400">{{ user_profile.user.username }}</h3>
+                                <p class="text-gray-300 text-sm mt-1">{{ user_profile.bio|truncatechars:80 }}</p>
                             </div>
                             {% if user_profile.availability_status == 'available' %}
                                 <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs shadow-sm">Available</span>
                             {% endif %}
                         </div>
-                        <div class="mt-3">
-                            <h4 class="text-sm font-semibold" style="color:var(--guild-color,#ffba08)">Skills</h4>
+                        <div class="mb-3">
+                            <h4 class="text-sm font-semibold text-yellow-400">Skills</h4>
                             <div class="flex flex-wrap gap-1 mt-1">
                                 {% for skill in user_profile.skills.all|slice:":3" %}
                                     <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs shadow-sm">{{ skill.name }}</span>
@@ -157,7 +176,7 @@
                             </div>
                         </div>
                         {% if user_profile.location %}
-                            <p class="text-gray-400 text-sm mt-2">📍 {{ user_profile.location }}</p>
+                            <p class="text-gray-400 text-sm">📍 {{ user_profile.location }}</p>
                         {% endif %}
                     </div>
                     
@@ -167,48 +186,78 @@
                         <div class="relative">
                             <button class="invite-dropdown-btn w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold px-4 py-2 rounded-lg shadow-md text-sm transition-all duration-200 hover:scale-105 flex items-center justify-center gap-2" 
                                     onclick="toggleInviteDropdown('{{ user_profile.user.id }}')">
-                                Invite to Team
+                                <span>Invite to Team</span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
-                            <div id="invite-dropdown-{{ user_profile.user.id }}" class="absolute bottom-full left-0 w-full mb-2 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-10 hidden">
+                            <div id="invite-dropdown-{{ user_profile.user.id }}" class="absolute bottom-full left-0 w-full mb-2 bg-slate-800 border border-gray-600 rounded-lg shadow-xl z-10 hidden overflow-hidden">
                                 {% for team in teams %}
-                                    <button class="w-full text-left px-4 py-2 text-gray-100 hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg text-sm transition-colors duration-200"
+                                    <button class="w-full text-left px-4 py-3 text-gray-100 hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg text-sm transition-colors duration-200 border-b border-gray-700 last:border-b-0"
                                             onclick="sendUnifiedInvite('{{ team.id }}', '{{ user_profile.user.id }}', '{{ team.title }}', '{{ user_profile.user.username }}')">
-                                        {{ team.title }}
+                                        <div class="font-medium">{{ team.title }}</div>
+                                        <div class="text-xs text-gray-400">{{ team.members.count }} member{{ team.members.count|pluralize }}</div>
                                     </button>
                                 {% endfor %}
                             </div>
                         </div>
                     </div>
+                    {% else %}
+                    <div class="mt-4">
+                        <p class="text-gray-400 text-sm text-center">Join a team to send invites</p>
+                    </div>
                     {% endif %}
                 </div>
             {% empty %}
-                <p class="text-gray-400 col-span-3">No recommended users found based on your interests and skills</p>
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-400">No recommended users found based on your interests and skills</p>
+                </div>
             {% endfor %}
         </div>
     </div>
 </div>
-{% endblock %}
+
+<style>
+.scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+</style>
 
 <script>
+// Get CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function getCSRFToken() {
+    return getCookie('csrftoken') || 
+           document.querySelector('meta[name=csrf-token]')?.getAttribute('content') ||
+           document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+           '{{ csrf_token }}';
+}
+
 function showToast(msg, type = 'success') {
     let toast = document.createElement('div');
     toast.textContent = msg;
-    toast.style.position = 'fixed';
-    toast.style.bottom = '30px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.background = type === 'success' ? '#059669' : '#dc2626';
-    toast.style.color = 'white';
-    toast.style.padding = '12px 32px';
-    toast.style.borderRadius = '8px';
-    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-    toast.style.zIndex = 9999;
-    toast.style.fontWeight = '500';
+    toast.className = `fixed bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg font-medium shadow-lg z-50 transition-all duration-300 ${type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`;
     document.body.appendChild(toast);
-    setTimeout(() => { 
+    
+    setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transform = 'translateX(-50%) translateY(20px)';
         setTimeout(() => toast.remove(), 300);
@@ -235,9 +284,10 @@ function sendUnifiedInvite(teamId, userId, teamTitle, username) {
     formData.append('team_id', teamId);
     formData.append('user_id', userId);
     
-    // Get CSRF token from meta tag or existing form
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
-                     document.querySelector('meta[name=csrf-token]')?.getAttribute('content');
+    // Get CSRF token
+    const csrfToken = getCSRFToken();
+    console.log('CSRF Token:', csrfToken); // Debug log
+    
     if (csrfToken) {
         formData.append('csrfmiddlewaretoken', csrfToken);
     }
@@ -246,7 +296,8 @@ function sendUnifiedInvite(teamId, userId, teamTitle, username) {
         method: 'POST',
         body: formData,
         headers: {
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken
         }
     })
     .then(response => response.json())
@@ -266,30 +317,32 @@ function sendUnifiedInvite(teamId, userId, teamTitle, username) {
                     
                     // Add to sent invitations section
                     const sentContainer = document.querySelector('#sent-invitations .space-y-2');
-                    const emptyMessage = sentContainer.querySelector('p.text-gray-400');
+                    const emptyMessage = sentContainer?.querySelector('p.text-gray-400');
                     if (emptyMessage) {
                         emptyMessage.remove();
                     }
                     
-                    const inviteCard = document.createElement('div');
-                    inviteCard.className = 'invite-card p-3 rounded-lg bg-gradient-to-r from-yellow-900/20 to-yellow-800/20 border border-yellow-700/30 transition-all duration-300 hover:shadow-md opacity-0';
-                    inviteCard.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <span class="font-semibold text-yellow-300">${username}</span>
-                                <span class="text-gray-400 text-sm ml-2">→ ${teamTitle}</span>
+                    if (sentContainer) {
+                        const inviteCard = document.createElement('div');
+                        inviteCard.className = 'invite-card p-3 rounded-lg bg-gradient-to-r from-yellow-900/20 to-yellow-800/20 border border-yellow-700/30 transition-all duration-300 hover:shadow-md opacity-0';
+                        inviteCard.innerHTML = `
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="font-semibold text-yellow-300">${username}</span>
+                                    <span class="text-gray-400 text-sm ml-2">→ ${teamTitle}</span>
+                                </div>
+                                <button onclick="cancelInviteCard(this)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs transition-colors duration-200">Cancel</button>
                             </div>
-                            <button onclick="cancelInviteCard(this)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs transition-colors duration-200">Cancel</button>
-                        </div>
-                    `;
-                    
-                    sentContainer.appendChild(inviteCard);
-                    
-                    // Animate in
-                    setTimeout(() => {
-                        inviteCard.style.opacity = '1';
-                        inviteCard.style.transform = 'translateY(0)';
-                    }, 100);
+                        `;
+                        
+                        sentContainer.appendChild(inviteCard);
+                        
+                        // Animate in
+                        setTimeout(() => {
+                            inviteCard.style.opacity = '1';
+                            inviteCard.style.transform = 'translateY(0)';
+                        }, 100);
+                    }
                 }, 400);
             }
             
@@ -305,6 +358,68 @@ function sendUnifiedInvite(teamId, userId, teamTitle, username) {
     });
 }
 
+function cancelInvite(invitationId) {
+    if (!confirm('Are you sure you want to cancel this invitation?')) {
+        return;
+    }
+    
+    // Get CSRF token
+    const csrfToken = getCSRFToken();
+    
+    fetch(`{% url 'teamup:cancel_invitation' 0 %}`.replace('0', invitationId), {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `csrfmiddlewaretoken=${csrfToken}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Invitation cancelled successfully');
+            
+            // Remove the invitation card with animation
+            const inviteCard = document.getElementById(`sent-invite-${invitationId}`);
+            if (inviteCard) {
+                inviteCard.style.transition = 'all 0.3s ease-out';
+                inviteCard.style.opacity = '0';
+                inviteCard.style.transform = 'translateY(-10px)';
+                
+                setTimeout(() => {
+                    inviteCard.remove();
+                    
+                    // Check if no more sent invitations
+                    const sentContainer = document.querySelector('#sent-invitations .space-y-2');
+                    if (sentContainer && sentContainer.children.length === 0) {
+                        const emptyMessage = document.createElement('p');
+                        emptyMessage.className = 'text-gray-400 text-sm';
+                        emptyMessage.textContent = 'No sent invitations.';
+                        sentContainer.appendChild(emptyMessage);
+                    }
+                }, 300);
+            }
+        } else {
+            showToast('Failed to cancel invitation', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('An error occurred while cancelling the invitation', 'error');
+    });
+}
+
+function cancelInviteCard(button) {
+    const card = button.closest('.invite-card');
+    if (card) {
+        card.style.transition = 'all 0.3s ease-out';
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(-10px)';
+        setTimeout(() => card.remove(), 300);
+    }
+}
+
 // Close dropdowns when clicking outside
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.relative')) {
@@ -317,15 +432,19 @@ document.addEventListener('click', function(event) {
 // Polling for received invitations every 30s
 setInterval(() => {
     fetch(window.location.pathname + '?ajax=1')
-        .then(resp => resp.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newReceived = doc.getElementById('received-invitations');
-            if (newReceived) {
-                document.getElementById('received-invitations').innerHTML = newReceived.innerHTML;
+        .then(resp => resp.json())
+        .then(data => {
+            if (data.html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.html, 'text/html');
+                const newReceived = doc.getElementById('received-invitations');
+                const currentReceived = document.getElementById('received-invitations');
+                if (newReceived && currentReceived) {
+                    currentReceived.innerHTML = newReceived.innerHTML;
+                }
             }
         })
         .catch(error => console.error('Error polling for invitations:', error));
 }, 30000);
 </script>
+{% endblock %}

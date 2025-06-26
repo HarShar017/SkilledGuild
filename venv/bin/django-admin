@@ -1,4 +1,4 @@
-#!/home/novicedeveloper/SkilledGuild/venv/bin/python
+#!/home/p_rth/projects/hackathon1-test/SkilledGuild/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys

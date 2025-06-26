@@ -9,8 +9,10 @@ from django.http import JsonResponse
 from django.core.serializers import serialize
 from django.utils import timezone
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from bs4 import BeautifulSoup
 
+@ensure_csrf_cookie
 @login_required
 def dashboard(request):
     profile = request.user.teamup_profile
@@ -20,7 +22,7 @@ def dashboard(request):
     user_skills = profile.skills.all()
     user_interests = profile.interests.all()
     
-    # Get recommended users excluding those already invited to any team
+    # Get recommended users excluding those already invited to any team by this user
     invited_user_ids = TeamInvitation.objects.filter(
         from_user=request.user, 
         status='pending'
@@ -41,6 +43,7 @@ def dashboard(request):
         'recommended_users': recommended_users,
         'sent_invitations': sent_invitations,
     }
+    
     if request.GET.get('ajax') == '1':
         html = render_to_string('teamup/dashboard.html', context, request=request)
         soup = BeautifulSoup(html, 'html.parser')
@@ -199,6 +202,7 @@ def handle_invitation(request, invitation_id):
     except TeamInvitation.DoesNotExist:
         messages.error(request, 'This invitation is no longer available or has already been handled.')
         return redirect('teamup:dashboard')
+        
     action = request.POST.get('action')
     if action == 'accept':
         invitation.status = 'accepted'
@@ -210,6 +214,7 @@ def handle_invitation(request, invitation_id):
     elif action == 'decline':
         invitation.status = 'declined'
         messages.info(request, 'Invitation declined.')
+    
     invitation.save()
     return redirect('teamup:dashboard')
 
@@ -219,6 +224,8 @@ def send_unified_invitation(request):
     if request.method == 'POST':
         team_id = request.POST.get('team_id')
         user_id = request.POST.get('user_id')
+        
+        print(f"DEBUG: Received team_id={team_id}, user_id={user_id}")  # Debug log
         
         try:
             team = get_object_or_404(Team, id=team_id)
@@ -230,6 +237,13 @@ def send_unified_invitation(request):
                     'success': False, 
                     'error': 'You must be a team member to invite others.'
                 }, status=403)
+            
+            # Check if user is already a member
+            if to_user in team.members.all():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'User is already a member of this team.'
+                }, status=400)
             
             # Use get_or_create to prevent duplicates
             invitation, created = TeamInvitation.objects.get_or_create(
@@ -253,6 +267,7 @@ def send_unified_invitation(request):
                 }, status=400)
                 
         except Exception as e:
+            print(f"DEBUG: Error sending invitation: {e}")  # Debug log
             return JsonResponse({
                 'success': False,
                 'error': 'An error occurred while sending the invitation.'
@@ -265,6 +280,10 @@ def cancel_invitation(request, invitation_id):
     """Cancel a sent invitation"""
     invitation = get_object_or_404(TeamInvitation, id=invitation_id, from_user=request.user, status='pending')
     invitation.delete()
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
+    
     messages.success(request, 'Invitation cancelled successfully.')
     return redirect('teamup:dashboard')
 

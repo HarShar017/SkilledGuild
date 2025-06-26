@@ -1,54 +1,137 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkilledGuild</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{% static 'skilledguild/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'skilledguild/navbar_sidebar.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Special+Gothic+Expanded+One&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.8"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Special+Gothic+Expanded+One&display=swap"
+        rel="stylesheet">
 </head>
+
 <body class="bg-gray-900 text-white min-h-screen">
     <!-- Top Navbar -->
-    <nav class="navbar fixed top-0 left-0 right-0 z-40 flex items-center justify-between bg-[#0b0c2a] h-16 px-6 shadow-lg border-b border-gray-800">
-        <div class="navbar-logo"><span>Skilled</span><span class="accent">Guild </span></div>
+    <nav
+        class="navbar fixed top-0 left-0 right-0 z-40 flex items-center justify-between bg-[#0b0c2a] h-16 px-6 shadow-lg border-b border-gray-800">
+        <div class="flex items-center gap-4">
+            <button id="mobile-menu-btn" class="lg:hidden text-white hover:text-yellow-400 transition">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+            <div class="navbar-logo"><span>Skilled</span><span class="accent">Guild </span></div>
+        </div>
         <ul class="navbar-menu flex items-center gap-6">
-            <li><a href="{% url 'dashboard' %}" class="navbar-link {% if request.resolver_match.url_name == 'dashboard' %}text-yellow-400 font-bold{% else %}hover:text-yellow-400{% endif %} transition"><i class="fa-solid fa-gauge"></i> <span class="hidden sm:inline">Dashboard</span></a></li>
-            <li><a href="#" class="navbar-link hover:text-yellow-400 transition"><i class="fa-solid fa-circle-info"></i> <span class="hidden sm:inline">About</span></a></li>
-            <li><a href="#" class="navbar-link hover:text-yellow-400 transition"><i class="fa-solid fa-user"></i> <span class="hidden sm:inline">Profile</span></a></li>
-            <li><a href="{% url 'logout' %}" class="navbar-link hover:text-yellow-400 transition"><i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Logout</span></a></li>
+            <li><a href="{% url 'dashboard' %}"
+                    class="navbar-link {% if request.resolver_match.url_name == 'dashboard' %}text-yellow-400 font-bold{% else %}hover:text-yellow-400{% endif %} transition"><i
+                        class="fa-solid fa-gauge"></i> <span class="hidden sm:inline">Dashboard</span></a></li>
+            <li><a href="#" class="navbar-link hover:text-yellow-400 transition"><i class="fa-solid fa-circle-info"></i>
+                    <span class="hidden sm:inline">About</span></a></li>
+            <li><a href="#" class="navbar-link hover:text-yellow-400 transition"><i class="fa-solid fa-user"></i> <span
+                        class="hidden sm:inline">Profile</span></a></li>
+            <li>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirm('Are you sure you want to logout?')" class="navbar-link hover:text-yellow-400 transition bg-transparent border-none cursor-pointer text-white">
+                        <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </form>
+            </li>
         </ul>
     </nav>
     <!-- Sidebar -->
-    <aside class="sidebar fixed top-16 left-0 bottom-0 w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-lg border-r border-gray-800 z-30 flex flex-col py-8 px-4">
+    <aside
+        class="sidebar fixed top-16 left-0 bottom-0 w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-lg border-r border-gray-800 z-30 flex flex-col py-8 px-4 hidden lg:flex">
         <ul class="sidebar-menu flex flex-col gap-6">
-            <li><a href="{% url 'guilds' %}" class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'guilds' or request.resolver_match.url_name == 'guild_detail' or request.resolver_match.url_name == 'create_post' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i class="fa-solid fa-users"></i> Guilds</a></li>
-            <li><a href="{% url 'teamup:dashboard' %}" class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.app_name == 'teamup' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i class="fa-solid fa-people-group"></i> Team-Up</a></li>
+            <li><a href="{% url 'guilds' %}"
+                    class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'guilds' or request.resolver_match.url_name == 'guild_detail' or request.resolver_match.url_name == 'create_post' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i
+                        class="fa-solid fa-users"></i> Guilds</a></li>
+            <li><a href="{% url 'teamup:dashboard' %}"
+                    class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.app_name == 'teamup' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i
+                        class="fa-solid fa-people-group"></i> Team-Up</a></li>
+            <li><a href="{% url 'sponsorverse' %}"
+                    class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'sponsorverse' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i
+                        class="fa-solid fa-hand-holding-dollar"></i> SponsorVerse</a></li>
+            <li><a href="{% url 'sponsorverse' %}"
+                    class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'sponsorverse' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i
+                        class="fa-solid fa-hand-holding-dollar"></i> Quests</a></li>
+        </ul>
+    </aside>
+
+    <!-- Mobile Sidebar -->
+    <aside
+        id="mobile-sidebar"
+        class="sidebar fixed top-16 left-0 bottom-0 w-64 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-lg border-r border-gray-800 z-30 flex flex-col py-8 px-4 lg:hidden transform -translate-x-full transition-transform duration-300">
+        <ul class="sidebar-menu flex flex-col gap-6">
+            <li><a href="{% url 'guilds' %}"
+                    class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'guilds' or request.resolver_match.url_name == 'guild_detail' or request.resolver_match.url_name == 'create_post' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i
+                        class="fa-solid fa-users"></i> Guilds</a></li>
+            <li><a href="{% url 'teamup:dashboard' %}"
+                    class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.app_name == 'teamup' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i
+                        class="fa-solid fa-people-group"></i> Team-Up</a></li>
+            <li><a href="{% url 'sponsorverse' %}"
+                    class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'sponsorverse' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i
+                        class="fa-solid fa-hand-holding-dollar"></i> SponsorVerse</a></li>
             <li>
-    <a href="{% url 'quests_orgg' %}" class="flex items-center gap-3 text-lg sidebar-link
-        {% if request.resolver_match.url_name == 'quests_orgg' %}
-            text-yellow-400 font-bold
-        {% else %}
-            text-gray-200 hover:text-yellow-400
-        {% endif %}
-        transition">
-        <i class="fa-solid fa-scroll"></i> Quests
-    </a>
-</li>
-            <li><a href="{% url 'sponsorverse' %}" class="flex items-center gap-3 text-lg sidebar-link {% if request.resolver_match.url_name == 'sponsorverse' %}text-yellow-400 font-bold{% else %}text-gray-200 hover:text-yellow-400{% endif %} transition"><i class="fa-solid fa-hand-holding-dollar"></i> SponsorVerse</a></li>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" onclick="return confirm('Are you sure you want to logout?')" class="flex items-center gap-3 text-lg sidebar-link text-gray-200 hover:text-yellow-400 transition bg-transparent border-none cursor-pointer w-full text-left">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </form>
+            </li>
             
         </ul>
     </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden hidden"></div>
+
     <!-- Main Content -->
     <main class="min-h-screen">
-        <div class="ml-64 mt-16 p-4 sm:p-8">
+        <div class="lg:ml-64 mt-16 p-4 sm:p-8">
             {% block content %}
             <!-- Page-specific content goes here -->
             {% endblock %}
         </div>
     </main>
+
+    <script>
+        // Mobile sidebar functionality
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileOverlay = document.getElementById('mobile-sidebar-overlay');
+
+        function toggleMobileSidebar() {
+            const isOpen = !mobileSidebar.classList.contains('-translate-x-full');
+            
+            if (isOpen) {
+                mobileSidebar.classList.add('-translate-x-full');
+                mobileOverlay.classList.add('hidden');
+            } else {
+                mobileSidebar.classList.remove('-translate-x-full');
+                mobileOverlay.classList.remove('hidden');
+            }
+        }
+
+        mobileMenuBtn?.addEventListener('click', toggleMobileSidebar);
+        mobileOverlay?.addEventListener('click', toggleMobileSidebar);
+
+        // Close mobile sidebar on link click
+        const mobileSidebarLinks = mobileSidebar?.querySelectorAll('a');
+        mobileSidebarLinks?.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileSidebar.classList.add('-translate-x-full');
+                mobileOverlay.classList.add('hidden');
+            });
+        });
+    </script>
 </body>
+
 </html>
